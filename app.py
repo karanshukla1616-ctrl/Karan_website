@@ -154,3 +154,18 @@ def delete_post(id):
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=False, host='0.0.0.0', port=port)
+    @app.route('/edit_video/<int:id>', methods=['POST'])
+def edit_video(id):
+    if not session.get('owner_logged_in'):
+        return redirect(url_for('index'))
+    
+    new_title = request.form.get('title')
+    new_url = request.form.get('video_url')
+    
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('UPDATE custom_videos SET title=?, video_url=? WHERE id=?', (new_title, new_url, id))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('index'))
+    
