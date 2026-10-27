@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SaveWater Digital Pro | एडवांस डिजिटल जल प्रबंधन पोर्टल</title>
+  
+  <!-- Professional HTML to PDF Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    :root {
+      --bg-color: #020813;
+      --card-bg: rgba(10, 25, 47, 0.85);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --text-color: #e0f7fa;
+      --header-bg: rgba(2, 11, 20, 0.9);
+      --input-bg: #010a14;
+      --base-font-size: 16px;
+      
+      --rainbow-1: linear-gradient(135deg, #ff007f, #7f00ff);
+      --rainbow-2: linear-gradient(135deg, #00f2fe, #4facfe);
+      --rainbow-3: linear-gradient(135deg, #00ff87, #60efff);
+      --rainbow-4: linear-gradient(135deg, #ff9900, #ff0055);
+      --rainbow-5: linear-gradient(135deg, #ff00cc, #3333ff);
+      --rainbow-6: linear-gradient(135deg, #ffea00, #ff1053);
+    }
+
+    body.light-mode {
+      --bg-color: #f0f4f8;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --glass-border: rgba(0, 0, 0, 0.15);
+      --text-color: #1a202c;
+      --header-bg: rgba(255, 255, 255, 0.95);
+      --input-bg: #ffffff;
+    }
+
+    body.focus-mode {
+      --bg-color: #000000;
+      --card-bg: #0d0d0d;
+      --text-color: #ffffff;
+      --glass-border: #00ff87;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: var(--base-font-size); }
+    body { 
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+      background: var(--bg-color); 
+      color: var(--text-color); 
+      line-height: 1.7; 
+      overflow-x: hidden;
+      position: relative;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 6px;
+      background: linear-gradient(90deg, #ff007f, #00f2fe, #00ff87, #ffea00);
+      width: 0%; z-index: 10000; box-shadow: 0 0 10px #00f2fe;
+    }
+
+    .bubbles-container {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -1; pointer-events: none; overflow: hidden;
+    }
+    .bubble {
+      position: absolute; bottom: -50px;
+      background: rgba(0, 242, 254, 0.15);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      border-radius: 50%;
+      animation: rise 10s infinite ease-in;
+    }
+    @keyframes rise {
+      0% { transform: translateY(0) scale(1); opacity: 0; }
+      50% { opacity: 0.6; }
+      100% { transform: translateY(-1000px) scale(1.3); opacity: 0; }
+    }
+
+    header { 
+      position: sticky; top: 0; z-index: 1000; 
+      background: var(--header-bg); backdrop-filter: blur(16px); 
+      border-bottom: 1px solid var(--glass-border); padding: 15px 20px; 
+      transition: background 0.4s ease;
+    }
+    .nav-container { max-width: 1200px; margin: auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; }
+    .logo { 
+      font-size: 1.8rem; font-weight: 900; 
+      background: linear-gradient(90deg, #ff007f, #00f2fe, #00ff87); 
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+      text-shadow: 0 0 20px rgba(0,242,254,0.5); 
+    }
+    nav { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    
+    .btn, nav a { 
+      padding: 10px 22px; border-radius: 30px; color: #ffffff; text-decoration: none; 
+      font-size: 0.95rem; font-weight: 800; cursor: pointer; transition: all 0.4s ease;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      display: inline-flex; align-items: center; gap: 8px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.6); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+    .btn:hover, nav a:hover, nav a.active { 
+      transform: translateY(-3px) scale(1.03); box-shadow: 0 0 25px currentColor;
+    }
+
+    #nav-topics { background: var(--rainbow-1); }
+    #nav-history { background: var(--rainbow-5); }
+    #nav-tools { background: var(--rainbow-2); }
+    #nav-ai { background: var(--rainbow-3); color: #000; text-shadow: none; }
+    #nav-test { background: var(--rainbow-6); color: #000; text-shadow: none; }
+    .btn-mode { background: linear-gradient(135deg, #ffea00, #ff9900); color: #000; text-shadow: none; }
+    .btn-lang { background: linear-gradient(135deg, #00f2fe, #00ff87); color: #000; text-shadow: none; }
+    .admin-lock-btn { background: rgba(0, 255, 135, 0.2); border: 1px solid #00ff87; color: #00ff87; }
+
+    .btn-read-ctrl { 
+      background: linear-gradient(135deg, #00f2fe, #7f00ff); 
+      color: #fff; text-shadow: 0 0 8px rgba(0,242,254,0.8);
+      border: 1px solid #00f2fe;
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.5);
+    }
+
+    .btn-delete-admin {
+      background: linear-gradient(135deg, #ff1053, #ff0055);
+      color: #fff; padding: 6px 12px; font-size: 0.85rem; font-weight: bold;
+      border-radius: 6px; border: 1px solid #ff4d4d; cursor: pointer; text-decoration: none; display: inline-block;
+    }
+
+    section { max-width: 1150px; margin: auto; padding: 40px 20px; }
+
+    .digital-card { 
+      background: var(--card-bg); backdrop-filter: blur(12px);
+      border-radius: 20px; padding: 30px; border: 1px solid var(--glass-border); 
+      margin-bottom: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); transition: background 0.4s ease;
+    }
+    .digital-card h3 { color: #00f2fe; margin-bottom: 15px; font-size: 1.7rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px; }
+    body.light-mode .digital-card h3 { color: #0066cc; }
+    .digital-card ul { margin-left: 20px; margin-bottom: 20px; }
+    .digital-card li { margin-bottom: 12px; font-size: 1.1rem; }
+
+    .card-img-box { text-align: center; margin: 20px 0; }
+    .card-img {
+      width: 100%; max-width: 750px; height: auto; max-height: 350px; object-fit: cover;
+      border-radius: 15px; border: 1px solid rgba(0, 242, 254, 0.4);
+    }
+
+    .custom-video-item {
+      background: rgba(0, 255, 135, 0.05);
+      border: 1px solid #00ff87;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 10px;
+    }
+    .custom-video-item h4 { color: #00ff87; margin-bottom: 8px; }
+
+    .reading-bar { 
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;
+      background: rgba(0, 0, 0, 0.25); padding: 18px 25px; border-radius: 20px; 
+      margin-bottom: 25px; border: 1.5px solid #00ff87; 
+      box-shadow: 0 0 20px rgba(0, 255, 135, 0.25);
+    }
+
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 8, 19, 0.92); z-index: 3000; justify-content: center; align-items: center; }
+    .keypad-box { background: #0a192f; border: 2px solid #00ff87; border-radius: 20px; padding: 25px; width: 320px; text-align: center; box-shadow: 0 0 25px rgba(0, 255, 135, 0.4); }
+    .keypad-box h3 { color: #00ff87; margin-bottom: 15px; font-size: 1.1rem; }
+    .pin-display { background: #020813; border: 1.5px solid #00ff87; border-radius: 10px; height: 50px; line-height: 50px; font-size: 1.5rem; letter-spacing: 6px; color: #00ff87; margin-bottom: 15px; overflow: hidden; }
+    .keypad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .key-btn { background: rgba(0, 255, 135, 0.08); border: 1px solid #00ff87; color: #00ff87; font-size: 1.2rem; font-weight: bold; padding: 12px; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+    .key-btn:active { background: #00ff87; color: #020813; }
+    .key-btn.clear { color: #ff4d4d; border-color: #ff4d4d; background: rgba(255, 77, 77, 0.1); }
+    .key-btn.submit { color: #020813; background: #00ff87; grid-column: span 3; margin-top: 5px; }
+    .close-modal-btn { margin-top: 10px; background: transparent; border: none; color: #888; font-size: 0.85rem; cursor: pointer; }
+
+    .digital-congrats-card {
+      background: rgba(10, 25, 47, 0.95);
+      border: 2px solid #00ff87;
+      border-radius: 24px;
+      padding: 40px 30px;
+      width: 90%;
+      max-width: 460px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(0, 255, 135, 0.4), inset 0 0 20px rgba(0, 242, 254, 0.2);
+    }
+    .pledge-card-theme { border-color: #00f2fe; box-shadow: 0 0 40px rgba(0, 242, 254, 0.4); }
+
+    .animated-trophy { font-size: 4.5rem; display: inline-block; margin-bottom: 10px; }
+    .congrats-title {
+      font-size: 2.4rem; font-weight: 900;
+      background: linear-gradient(90deg, #ffea00, #00ff87, #00f2fe, #ff007f);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 12px; text-transform: uppercase;
+    }
+    .congrats-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255, 234, 0, 0.2); color: #ffea00; border: 1px solid #ffea00; 
+      padding: 6px 20px; border-radius: 30px; font-size: 0.9rem; font-weight: bold; margin-bottom: 20px;
+    }
+    .congrats-btn {
+      background: linear-gradient(135deg, #00ff87, #00f2fe);
+      color: #020813; font-weight: 900; font-size: 1.1rem; border: none;
+      padding: 14px 35px; border-radius: 30px; cursor: pointer;
+    }
+
+    .admin-panel { {% if is_owner %}display: block;{% else %}display: none;{% endif %} background: rgba(0, 255, 135, 0.08); border: 2px dashed #00ff87; border-radius: 15px; padding: 20px; max-width: 600px; margin: 0 auto 25px auto; }
+    .admin-panel h3 { color: #00ff87; margin-bottom: 12px; font-size: 1.1rem; }
+    .admin-panel select, .admin-panel input { width: 100%; padding: 12px; margin-bottom: 12px; background: #0a192f; border: 1px solid #00ff87; border-radius: 8px; color: #fff; font-size: 0.95rem; }
+    
+    .admin-delete-list { margin-top: 20px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; border: 1px solid rgba(255, 77, 77, 0.4); }
+    .admin-delete-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+    .editor-box-container { margin-top: 20px; background: rgba(10, 25, 47, 0.95); border: 2px solid #ff007f; border-radius: 12px; padding: 15px; }
+    .editor-area-sec { display: none; }
+    .code-textarea { width: 100%; height: 200px; background: #010a14; color: #00ff87; font-family: monospace; padding: 12px; border: 1px solid #ff007f; border-radius: 8px; margin-bottom: 10px; }
+
+    .public-board-box { background: rgba(0, 242, 254, 0.05); border: 2px solid #00f2fe; border-radius: 18px; padding: 20px; margin-top: 25px; }
+    .post-card { background: rgba(1, 10, 20, 0.8); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; margin-top: 12px; position: relative; }
+    .post-author { color: #00ff87; font-weight: bold; font-size: 0.95rem; }
+    .post-time { color: #888; font-size: 0.75rem; margin-left: 10px; }
+    .post-text { margin-top: 8px; font-size: 1rem; word-break: break-word; }
+    .owner-delete-btn { position: absolute; right: 12px; top: 12px; background: #ff1053; border: none; color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer; }
+
+    .mcq-card { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 15px; padding: 20px; margin-bottom: 20px; }
+    .mcq-question { font-size: 1.15rem; font-weight: bold; color: #00f2fe; margin-bottom: 12px; }
+    .mcq-options { display: flex; flex-direction: column; gap: 10px; }
+    .mcq-option-label { display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05); padding: 10px 15px; border-radius: 8px; cursor: pointer; }
+    .mcq-option-label input { accent-color: #00ff87; width: 18px; height: 18px; }
+
+    #digitalScoreDashboard { display: none; background: rgba(10, 25, 47, 0.95); border: 2px solid #00f2fe; border-radius: 20px; padding: 25px; margin-bottom: 30px; }
+    .dashboard-header { text-align: center; font-size: 1.8rem; font-weight: bold; color: #00ff87; margin-bottom: 20px; }
+    .digital-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; text-align: center; }
+    .digital-stat-card { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; }
+    .stat-val { font-size: 1.8rem; font-weight: 900; }
+    .stat-lbl { font-size: 0.85rem; color: #aaa; }
+
+    .cert-pledge-card { background: var(--card-bg); border: 2px solid #00ff87; border-radius: 20px; padding: 30px; margin-top: 35px; text-align: center; }
+    .cert-input { padding: 12px; width: 100%; max-width: 400px; font-size: 1rem; border-radius: 8px; border: 1px solid #00ff87; background: var(--input-bg); color: var(--text-color); margin-bottom: 15px; text-align: center; }
+    .pledge-box { margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--glass-border); }
+    .pledge-count { font-size: 1.4rem; font-weight: bold; color: #00ff87; margin-top: 15px; }
+
+    .download-box { background-color: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 30px; }
+    .btn-download { display: inline-block; background: var(--rainbow-2); color: #000; padding: 12px 30px; font-size: 16px; font-weight: bold; text-decoration: none; border-radius: 30px; cursor: pointer; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+    .widget-box { background: var(--card-bg); padding: 25px; border-radius: 18px; border: 1px solid var(--glass-border); }
+    .widget-box input, .widget-box textarea { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--glass-border); border-radius: 10px; color: var(--text-color); margin: 8px 0 15px; font-size: 1rem; }
+    .res-text { font-weight: bold; color: #00ff87; background: rgba(0, 255, 135, 0.1); padding: 12px; border-radius: 10px; text-align: center; border: 1px solid #00ff87; }
+
+    #pdf-template-container { display: none; }
+    footer { text-align: center; padding: 25px; background: rgba(0,0,0,0.2); border-top: 1px solid var(--glass-border); margin-top: 40px; }
+  </style>
+</head>
+<body>
+
+  <div id="progress-bar"></div>
+  <div class="bubbles-container" id="bubblesContainer"></div>
+
+  <header>
+    <div class="nav-container">
+      <div class="logo">💧 SaveWater Digital Pro</div>
+      <nav>
+        <a onclick="showSection('topics')" id="nav-topics" class="active" data-key="navTopics">📂 7 जल संरक्षण विषय</a>
+        <a onclick="showSection('history')" id="nav-history" data-key="navHistory">🏛️ प्राचीन भारत</a>
+        <a onclick="showSection('tools')" id="nav-tools" data-key="navTools">🧮 डिजिटल टूल्स व पब्लिक बोर्ड</a>
+        <a onclick="showSection('ai-section')" id="nav-ai" data-key="navAi">🤖 AI असिस्टेंट</a>
+        <a onclick="showSection('test-section')" id="nav-test" data-key="navTest">🧪 TEST</a>
+        <button class="btn btn-lang" id="langToggleBtn" onclick="toggleLanguage()">🌐 Lang: HI / EN</button>
+        {% if is_owner %}
+        <a href="/logout" class="btn btn-delete-admin">🔓 लॉगआउट (Owner)</a>
+        {% else %}
+        <button class="btn admin-lock-btn" onclick="openKeypad()" data-key="btnAdmin">🔐 एडमिन पैनल</button>
+        {% endif %}
+        <button class="btn btn-mode" id="themeToggleBtn" onclick="toggleTheme()" data-key="btnTheme">☀️ लाइट मोड</button>
+      </nav>
+    </div>
+  </header>
+
+  <section style="text-align: center; padding: 40px 20px 20px;">
+    <h1 style="font-size: 2.8rem; background: linear-gradient(90deg, #00f2fe, #ff007f); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" data-key="heroTitle">स्मार्ट डिजिटल जल प्रबंधन प्रणाली</h1>
+    <p data-key="heroDesc">जल संरक्षण एवं वर्षा जल संग्रहण का सम्पूर्ण सचित्र और विस्तृत विवरण</p>
+  </section>
+
+  <!-- ADMIN CONTROL PANEL -->
+  <section id="admin-container" style="max-width: 800px; margin: auto; padding: 0 20px;">
+    <div class="admin-panel" id="adminPanel">
+      <h3 data-key="adminPanelTitle">⚙️ ओनर/एडमिन कंट्रोल पैनल</h3>
+      
+      <form action="/add_video" method="POST">
+        <label style="color: #00ff87; display: block; margin-bottom: 5px;" data-key="selectTopicLabel">चुने किस विषय में वीडियो जोड़ना है:</label>
+        <select name="topic_key" id="topicSelect" required>
+          <option value="topic-1" data-key="topicOpt1">विषय 1: बाथरूम और स्वच्छता</option>
+          <option value="topic-2" data-key="topicOpt2">विषय 2: रसोईघर और बर्तन धोना</option>
+          <option value="topic-3" data-key="topicOpt3">विषय 3: कपड़े धोना और सफाई</option>
+          <option value="topic-4" data-key="topicOpt4">विषय 4: लीकेज की मरम्मत</option>
+          <option value="topic-5" data-key="topicOpt5">विषय 5: ग्रामीण जल व प्राकृतिक स्रोत</option>
+          <option value="topic-6" data-key="topicOpt6">विषय 6: डिजिटल जल प्रबंधन</option>
+          <option value="topic-7" data-key="topicOpt7">विषय 7: वर्षा जल संग्रहण (Rain Water Harvesting)</option>
+        </select>
+
+        <input type="text" name="title" placeholder="वीडियो की हेडिंग (उदा: नया जल संरक्षण वीडियो)" required data-key-placeholder="videoTitlePlaceholder">
+        <input type="text" name="video_url" placeholder="YouTube Embed URL (उदा: https://www.youtube.com/embed/...)" required>
+        <button type="submit" class="btn btn-save" style="width: 100%; background: #00ff87; color: #020813; font-weight: bold;">➕ वीडियो पब्लिश करें</button>
+      </form>
+
+      <div class="admin-delete-list">
+        <h4 style="color: #ff4d4d; margin-bottom: 10px;" data-key="manageVideosTitle">🗑️ अपलोड किए गए वीडियो मैनेज करें:</h4>
+        {% if videos %}
+          {% for vid in videos %}
+          <div class="admin-delete-item">
+            <span style="font-size: 0.85rem; color: #fff;">{{ vid[2] }} ({{ vid[1] }})</span>
+            <a href="/delete_video/{{ vid[0] }}" class="btn-delete-admin">🗑️ डिलीट</a>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p style="color: #aaa; font-size: 0.85rem;" data-key="noVideosText">कोई वीडियो अपलोड नहीं है।</p>
+        {% endif %}
+      </div>
+
+      <!-- HIDDEN WEBSITE CODE EDITOR LAYER -->
+      <div class="editor-box-container">
+        <h4 style="color: #ff007f; margin-bottom: 8px;" data-key="editorTitle">🛠️ वेबसाइट कोड / डिज़ाइन एडिटर (हिडन लेयर)</h4>
+        <div class="editor-area-sec" id="editorAreaSec" style="display: block;">
+          <textarea class="code-textarea" id="liveCodeInput"></textarea>
+          <button class="btn btn-save" style="width: 100%; font-size: 1rem;" onclick="applyLiveCodeEdit()">⚡ वेबसाइट डिज़ाइन / कोड लागू करें</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 TOPICS SECTION -->
+  <section id="topics-section">
+    <div class="reading-bar">
+      <div>
+        <span>👁️ <strong data-key="readingBarTitle">डिजिटल रीडिंग मोड:</strong> <span data-key="readingBarDesc">पढ़ने के लिए कंट्रोल सुविधाएँ</span></span>
+      </div>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn btn-read-ctrl" onclick="changeFontSize(1)">🔍 Font +</button>
+        <button class="btn btn-read-ctrl" onclick="changeFontSize(-1)">🔍 Font -</button>
+        <button class="btn btn-read-ctrl" onclick="toggleFocusMode()" data-key="btnFocus">📖 फोकस मोड</button>
+      </div>
+    </div>
+
+    <!-- TOPIC 1 -->
+    <div class="digital-card" id="topic-1">
+      <h3 data-key="t1Header">1. बाथरूम और स्वच्छता में जल संरक्षण (Bathroom & Hygiene)</h3>
+      <ul>
+        <li data-key="t1L1"><strong>ब्रश और शेविंग के दौरान स्मार्ट आदतें:</strong> नल खुला रखने से प्रति मिनट 6 से 10 लीटर पानी व्यर्थ बह जाता है। नल बंद रखकर मग का इस्तेमाल करें।</li>
+        <li data-key="t1L2"><strong>शावर बनाम बाल्टी:</strong> 10 मिनट के शावर में 80 से 100 लीटर पानी खर्च होता है, बाल्टी से नहाने पर केवल 15 से 20 लीटर।</li>
+      </ul>
+      <div class="card-img-box"><img class="card-img" src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&it=crop&w=1000&q=80" alt="Bathroom"></div>
+      <div class="custom-video-list">
+        {% for vid in videos %}
+          {% if vid[1] == 'topic-1' %}
+          <div class="custom-video-item">
+            <h4>📹 {{ vid[2] }}</h4>
+            <div style="position:relative; width:100%; padding-bottom:56.25%; margin-top:10px;"><iframe src="{{ vid[3] }}" style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:10px;" frameborder="0" allowfullscreen></iframe></div>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- TOPIC 2 -->
+    <div class="digital-card" id="topic-2">
+      <h3 data-key="t2Header">2. रसोईघर और बर्तन धोने में बचत (Kitchen & Dishwashing)</h3>
+      <ul>
+        <li data-key="t2L1"><strong>टब/सिंक का प्रयोग:</strong> सीधे बहते नल से बर्तन न धोएं। एक टब में साबुन वाले पानी और दूसरे में साफ पानी का उपयोग करें।</li>
+        <li data-key="t2L2"><strong>RO वेस्ट वॉटर:</strong> 1 लीटर साफ पानी पर 2-3 लीटर पानी बर्बाद होता है। इसे पोछा लगाने या कपड़े धोने में इस्तेमाल करें।</li>
+      </ul>
+      <div class="card-img-box"><img class="card-img" src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&q=80" alt="Kitchen"></div>
+      <div class="custom-video-list">
+        {% for vid in videos %}
+          {% if vid[1] == 'topic-2' %}
+          <div class="custom-video-item">
+            <h4>📹 {{ vid[2] }}</h4>
+            <div style="position:relative; width:100%; padding-bottom:56.25%; margin-top:10px;"><iframe src="{{ vid[3] }}" style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:10px;" frameborder="0" allowfullscreen></iframe></div>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- TOPIC 3 -->
+    <div class="digital-card" id="topic-3">
+      <h3 data-key="t3Header">3. कपड़े धोने और घर की सफाई में बचत (Laundry & House Cleaning)</h3>
+      <ul>
+        <li data-key="t3L1"><strong>वाशिंग मशीन:</strong> केवल Full Load कपड़ों पर ही चलाएं। डिटर्जेंट के बाद निकला पानी फर्श सफाई में इस्तेमाल करें।</li>
+      </ul>
+      <div class="card-img-box"><img class="card-img" src="https://images.unsplash.com/photo-1582735689369-4fe89db7114c?auto=format&fit=crop&w=1000&q=80" alt="Laundry"></div>
+      <div class="custom-video-list">
+        {% for vid in videos %}
+          {% if vid[1] == 'topic-3' %}
+          <div class="custom-video-item">
+            <h4>📹 {{ vid[2] }}</h4>
+            <div style="position:relative; width:100%; padding-bottom:56.25%; margin-top:10px;"><iframe src="{{ vid[3] }}" style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:10px;" frameborder="0" allowfullscreen></iframe></div>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- TOPIC 4 -->
+    <div class="digital-card" id="topic-4">
+      <h3 data-key="t4Header">4. लीकेज की तुरंत मरम्मत (Fixing Water Leaks)</h3>
+      <ul>
+        <li data-key="t4L1"><strong>टपकते नल:</strong> प्रति सेकंड एक बूंद टपकने से महीने में 500 से 1000 लीटर पानी बर्बाद होता है। वाशर तुरंत बदलें।</li>
+      </ul>
+      <div class="card-img-box"><img class="card-img" src="https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1000&q=80" alt="Leaks"></div>
+      <div class="custom-video-list">
+        {% for vid in videos %}
+          {% if vid[1] == 'topic-4' %}
+          <div class="custom-video-item">
+            <h4>📹 {{ vid[2] }}</h4>
+            <div style="position:relative; width:100%; padding-bottom:56.25%; margin-top:10px;"><iframe src="{{ vid[3] }}" style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:10px;" frameborder="0" allowfullscreen></iframe></div>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- TOPIC 5 -->
+    <div class="digital-card" id="topic-5">
+      <h3 data-key="t5Header">5. ग्रामीण जल व प्राकृतिक स्रोत संरक्षण (Rural Watershed)</h3>
+      <ul>
+        <li data-key="t5L1"><strong>चेक डैम व बोरीबांध:</strong> छोटी नदियों/नालों पर पत्थरों या बालू की बोरियों से Check Dams बनाकर बहाव रोकें।</li>
+      </ul>
+      <div class="card-img-box"><img class="card-img" src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80" alt="Rural"></div>
+      <div class="custom-video-list">
+        {% for vid in videos %}
+          {% if vid[1] == 'topic-5' %}
+          <div class="custom-video-item">
+            <h4>📹 {{ vid[2] }}</h4>
+            <div style="position:relative; width:100%; padding-bottom:56.25%; margin-top:10px;"><iframe src="{{ vid[3] }}" style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:10px;" frameborder="0" allowfullscreen></iframe></div>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+      <!-- TOPIC 6 -->
+    <div class="digital-card" id="topic-6">
+      <h3 data-key="t6Header">6. स्मार्ट शहरों में डिजिटल जल प्रबंधन (Smart City Water)</h3>
+      <ul>
+        <li data-key="t6L1"><strong>स्मार्ट सेंसर:</strong> पाइपलाइनों में IoT आधारित डिजिटल प्रेशर सेंसर लगाएं जो लीकेज होने पर अलर्ट भेजते हैं।</li>
+      </ul>
+      <div class="card-img-box"><img class="card-img" src="https://images.unsplash.com/photo-1477959858617-67f30ac4ce78?auto=format&fit=crop&w=1000&q=80" alt="Smart City"></div>
+      <div class="custom-video-list">
+        {% for vid in videos %}
+          {% if vid[1] == 'topic-6' %}
+          <div class="custom-video-item">
+            <h4>📹 {{ vid[2] }}</h4>
+            <div style="position:relative; width:100%; padding-bottom:56.25%; margin-top:10px;"><iframe src="{{ vid[3] }}" style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:10px;" frameborder="0" allowfullscreen></iframe></div>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- TOPIC 7 -->
+    <div class="digital-card" id="topic-7" style="border: 2px solid #00ff87;">
+      <h3 style="color: #00ff87;" data-key="t7Header">7. वर्षा जल संग्रहण (Rain Water Harvesting)</h3>
+      <ul>
+        <li data-key="t7L1"><strong>छत के पानी का संचयन:</strong> बारिश के पानी को छत से पाइप के माध्यम से टैंक या भूजल रिचार्ज पिट में एकत्र करें।</li>
+      </ul>
+      <div class="card-img-box"><img class="card-img" src="https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=1000&q=80" alt="Harvesting"></div>
+      <div class="custom-video-list">
+        {% for vid in videos %}
+          {% if vid[1] == 'topic-7' %}
+          <div class="custom-video-item">
+            <h4>📹 {{ vid[2] }}</h4>
+            <div style="position:relative; width:100%; padding-bottom:56.25%; margin-top:10px;"><iframe src="{{ vid[3] }}" style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:10px;" frameborder="0" allowfullscreen></iframe></div>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ANCIENT WATER CONSERVATION SECTION -->
+  <section id="history-section" style="display: none;">
+    <div class="digital-card">
+      <h2 style="color: #00f2fe; text-align: center; margin-bottom: 10px;" data-key="ancientTitle">🏛️ प्राचीन एवं ऐतिहासिक भारत में जल संरक्षण</h2>
+      <p style="text-align: center; color: #aaa; margin-bottom: 25px;" data-key="ancientSubTitle">वैदिक काल से मध्यकालीन इतिहास तक की जल-प्रबंधन प्रणालियाँ</p>
+
+      <div class="download-box">
+        <p data-key="pdfBoxText">📖 पूरा स्टडी नोट्स पढ़ने के लिए नीचे दिए गए बटन पर क्लिक करके PDF डाउनलोड करें:</p>
+        <button onclick="downloadStudyNotesPDF()" class="btn-download" data-key="downloadNotesBtn">📥 स्टडी नोट्स PDF डाउनलोड करें</button>
+      </div>
+
+      <h3 data-key="ancientTopicHeader">विषय सूची एवं मुख्य बिंदु</h3>
+      <ul>
+        <li data-key="ancientPoint1"><strong>सिंधु घाटी सभ्यता (धोलावीरा):</strong> विश्व की सबसे प्राचीन जल संचयन प्रणाली जहाँ पत्थरों से कटाई करके विशाल जलाशय बनाए गए थे।</li>
+        <li data-key="ancientPoint2"><strong>मौर्य काल (सुदर्शन झील):</strong> गुजरात के जूनागढ़ में चंद्रगुप्त मौर्य द्वारा निर्मित सुदर्शन झील प्राचीन सिंचाई तकनीक का अद्भुत उदाहरण है।</li>
+        <li data-key="ancientPoint3"><strong>चोल कालीन जल संरचनाएँ (कल्लनई बाँध):</strong> कावेरी नदी पर निर्मित 'ग्रैंड एनीकट' दुनिया के सबसे पुराने कार्यरत जल बाँधों में से एक है।</li>
+        <li data-key="ancientPoint4"><strong>पारंपरिक संरचनाएँ (बावड़ी, टांका व कुएँ):</strong> राजस्थान और गुजरात में वर्षा जल को संग्रहित करने की विशेष underground तकनीकें।</li>
+      </ul>
+      <div class="card-img-box"><img class="card-img" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80" alt="Ancient"></div>
+    </div>
+  </section>
+
+  <!-- TOOLS & PUBLIC BOARD SECTION -->
+  <section id="tools-section" style="display: none;">
+    <h2 style="text-align:center; margin-bottom:20px; color:#00f2fe;" data-key="toolsTitle">🧮 डिजिटल नापने के टूल्स व पब्लिक शेयरिंग बोर्ड</h2>
+    <div class="grid-2">
+      <div class="widget-box">
+        <h3 style="color: #00f2fe;" data-key="calcTitle">📊 डिजिटल जल खपत मापक</h3>
+        <label data-key="calcShowerLabel">नहाने का समय (मिनट):</label>
+        <input type="number" id="calcShower" value="10" oninput="calculateWaterUsage()">
+        <label data-key="calcDishesLabel">बर्तन धोने के फेरे:</label>
+        <input type="number" id="calcDishes" value="3" oninput="calculateWaterUsage()">
+        <div class="res-text" id="calcResult">अनुमानित खपत: 135 लीटर/दिन</div>
+      </div>
+
+      <div class="widget-box">
+        <h3 style="color: #ff007f;" data-key="noteTitle">📝 पर्सनल नोटपैड (केवल आपके लिए)</h3>
+        <textarea id="noteText" rows="5" placeholder="पर्सनल नोट्स लिखें..."></textarea>
+        <button class="btn btn-save" style="width: 100%;" onclick="saveNotes()" data-key="saveNoteBtn">💾 नोट सेव करें</button>
+        <div id="noteStatus" style="margin-top: 10px; font-size: 0.9rem; color: #00ff87;"></div>
+      </div>
+    </div>
+      <!-- PUBLIC LIVE SHARED BOARD -->
+    <div class="public-board-box">
+      <h3 style="color: #00f2fe; margin-bottom: 10px;" data-key="boardTitle">🌐 पब्लिक लाइव कम्युनिटी बोर्ड (सबके लिए दृश्यमान)</h3>
+      <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 15px;" data-key="boardDesc">यहाँ आप जो भी जानकारी पोस्ट करेंगे, वह इस वेबसाइट के सभी visitors को live दिखेगी।</p>
+      
+      <form action="/add_post" method="POST">
+        <input type="text" name="author" placeholder="आपका नाम (उदा: राहुल कुमार)" required data-key-placeholder="namePlaceholder">
+        <textarea name="text" rows="3" placeholder="यहाँ अपनी जानकारी / विचार लिखें..." required data-key-placeholder="postPlaceholder"></textarea>
+        <button type="submit" class="btn btn-save" style="width: 100%; font-size: 1rem; background: #00f2fe; color: #020813; font-weight: bold;" data-key="postBtn">🚀 पब्लिक बोर्ड पर पोस्ट करें (Share Live)</button>
+      </form>
+
+      <div style="margin-top: 25px;">
+        <h4 style="color: #00ff87; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;" data-key="livePostsHeading">📢 लाइव साझा की गई जानकारियाँ:</h4>
+        <div id="publicPostsContainer" style="margin-top: 15px;">
+          {% if posts %}
+            {% for post in posts %}
+            <div class="post-card">
+              <div>
+                <span class="post-author">👤 {{ post[1] }}</span>
+                <span class="post-time">🕒 {{ post[3] }}</span>
+              </div>
+              <div class="post-text">{{ post[2] }}</div>
+              {% if is_owner %}
+              <a href="/delete_post/{{ post[0] }}" class="owner-delete-btn" style="text-decoration: none;">🗑️ डिलीट</a>
+              {% endif %}
+            </div>
+            {% endfor %}
+          {% else %}
+            <p style="color: #aaa; font-size: 0.9rem; margin-top: 10px;" data-key="noPostsMsg">अभी तक किसी ने कोई जानकारी साझा नहीं की है।</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI ASSISTANT SECTION -->
+  <section id="ai-section" style="display: none;">
+    <h2 style="text-align:center; margin-bottom:20px; color:#00ff87;" data-key="aiTitle">🤖 AI जल सहायक</h2>
+    <div class="widget-box" style="max-width: 800px; margin: auto;">
+      <div id="aiChatBox" style="height: 250px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border); margin-bottom: 15px;">
+        <div style="color: #00f2fe;" id="aiWelcomeMsg"><strong>असिस्टेंट:</strong> नमस्ते! आप जल संरक्षण के विषय में सवाल पूछ सकते हैं।</div>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <input type="text" id="aiQuery" placeholder="सवाल लिखें..." style="flex: 1; margin: 0;">
+        <button class="btn btn-save" onclick="askAi()" data-key="askAiBtn">पूछें</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEST SECTION -->
+  <section id="test-section" style="display: none;">
+    <h2 style="text-align:center; margin-bottom:20px; color:#ffea00;" data-key="quizTitle">🧪 ऑनलाइन जल संरक्षण परीक्षा (MCQ Test)</h2>
+    
+    <div id="digitalScoreDashboard">
+      <div class="dashboard-header" data-key="dashTitle">📊 डिजिटल परीक्षा परिणाम</div>
+      <div class="digital-grid">
+        <div class="digital-stat-card"><div class="stat-val" style="color: #00f2fe;" id="statTotal">0</div><div class="stat-lbl" data-key="statTotalLbl">कुल प्रश्न</div></div>
+        <div class="digital-stat-card"><div class="stat-val" style="color: #00ff87;" id="statCorrect">0</div><div class="stat-lbl" data-key="statCorrectLbl">सही उत्तर</div></div>
+        <div class="digital-stat-card"><div class="stat-val" style="color: #ff1053;" id="statIncorrect">0</div><div class="stat-lbl" data-key="statIncorrectLbl">गलत उत्तर</div></div>
+        <div class="digital-stat-card"><div class="stat-val" style="color: #ffea00;" id="statPercent">0%</div><div class="stat-lbl" data-key="statPercentLbl">प्रतिशत (%)</div></div>
+      </div>
+      <div class="review-container" style="margin-top: 25px; border-top: 1px dashed var(--glass-border); padding-top: 20px;">
+        <h3 style="color: #ff1053; margin-bottom: 15px;" data-key="reviewTitle">❌ गलत प्रश्नों का उत्तर विश्लेषण:</h3>
+        <div id="wrongQuestionsReview"></div>
+      </div>
+    </div>
+
+    <form id="quizForm">
+      <div id="questionsContainer"></div>
+      <div style="text-align: center; margin-top: 30px;">
+        <button type="button" class="btn btn-save" style="font-size: 1.2rem; padding: 12px 35px;" onclick="submitQuiz()" data-key="submitQuizBtn">📊 रिजल्ट देखें (Submit Test)</button>
+      </div>
+    </form>
+
+    <div class="cert-pledge-card">
+      <h2 style="color: #00f2fe; margin-bottom: 10px;" data-key="certTitle">📜 जल संरक्षण हीरो प्रमाण पत्र जनरेटर</h2>
+      <p style="margin-bottom: 20px; color: #aaa;" data-key="certDesc">अपना नाम लिखें और अपना आधिकारिक प्रमाण पत्र डाउनलोड करें:</p>
+      <input type="text" id="userNameInput" class="cert-input" placeholder="अपना पूरा नाम दर्ज करें">
+      <br>
+      <button class="btn btn-save" style="font-size: 1rem;" onclick="startCertificateGeneration()" data-key="downloadCertBtn">🎓 सर्टिफिकेट डाउनलोड करें</button>
+
+      <div class="pledge-box">
+        <h3 style="color: #ffea00; margin-bottom: 10px;" data-key="pledgeTitle">💧 जल संरक्षण महा-संकल्प</h3>
+        <button class="btn btn-read-ctrl" onclick="takePledge()" data-key="pledgeBtn">मैं पानी बचाने का संकल्प लेता हूँ 💧</button>
+        <div class="pledge-count"><span id="counterDisplay">1,250</span> <span data-key="pledgeCountTxt">लोगों ने संकल्प लिया</span></div>
+      </div>
+    </div>
+  </section>
+  <!-- KEYPAD MODAL -->
+  <div class="modal-overlay" id="keypadModal">
+    <div class="keypad-box">
+      <h3>🔢 Admin PIN Access (2010)</h3>
+      <div class="pin-display" id="pinDisplay"></div>
+      <div class="keypad-grid">
+        <button class="key-btn" onclick="pressKey('1')">1</button>
+        <button class="key-btn" onclick="pressKey('2')">2</button>
+        <button class="key-btn" onclick="pressKey('3')">3</button>
+        <button class="key-btn" onclick="pressKey('4')">4</button>
+        <button class="key-btn" onclick="pressKey('5')">5</button>
+        <button class="key-btn" onclick="pressKey('6')">6</button>
+        <button class="key-btn" onclick="pressKey('7')">7</button>
+        <button class="key-btn" onclick="pressKey('8')">8</button>
+        <button class="key-btn" onclick="pressKey('9')">9</button>
+        <button class="key-btn clear" onclick="clearPin()">C</button>
+        <button class="key-btn" onclick="pressKey('0')">0</button>
+        <button class="key-btn clear" onclick="backspacePin()">⌫</button>
+        <button class="key-btn submit" onclick="submitPinForm()">UNLOCK PANEL</button>
+      </div>
+      <button class="close-modal-btn" onclick="closeKeypad()" data-key="cancelBtn">रद्द करें (Cancel)</button>
+    </div>
+  </div>
+
+  <form id="pinLoginForm" action="/login" method="POST" style="display: none;">
+    <input type="hidden" name="pin" id="hiddenPinInput">
+  </form>
+
+  <!-- PLEDGE MODAL -->
+  <div class="modal-overlay" id="pledgeModal">
+    <div class="digital-congrats-card pledge-card-theme">
+      <div class="animated-trophy">🎖️</div>
+      <h2 class="congrats-title">बहुत-बहुत बधाई!</h2>
+      <div class="congrats-badge">💧 WATER HERO PLEDGE TAKEN 💧</div>
+      <p style="color: #e0f7fa; font-size: 1.2rem; margin-bottom: 15px; font-weight: 600;">आपने जल संरक्षण का पवित्र संकल्प ले लिया है!</p>
+      <button class="congrats-btn" onclick="closePledgeModal()">धन्यवाद! जय हिंद 🇮🇳</button>
+    </div>
+  </div>
+
+  <!-- HIDDEN PDF CONTENT CONTAINER -->
+  <div id="pdf-template-container">
+    <div id="pdf-content" style="padding: 30px; font-family: Arial, sans-serif; color: #111; background: #fff; line-height: 1.6;">
+      <h1 style="text-align: center; color: #0066cc; font-size: 22px; border-bottom: 2px solid #0066cc; padding-bottom: 10px; margin-bottom: 20px;">भारत में जल संरक्षण: वैदिक काल से मध्यकालीन इतिहास तक एक संपूर्ण अध्ययन</h1>
+      <p>सिंधु घाटी सभ्यता से लेकर मौर्य काल (सुदर्शन झील) और चोल कालीन कल्लनई बाँध तक जल प्रबंधन की उन्नत प्रणालियाँ भारतीय संस्कृति का आधार रही हैं।</p>
+    </div>
+  </div>
+
+  <footer>
+    <p data-key="footerTxt">© 2026 SaveWater Digital Pro | जल ही जीवन है 💧</p>
+  </footer>
+
+  <script>
+    let enteredPin = "";
+    let pledgeCount = 1250;
+    let hasPledged = false;
+    let currentFontSize = 16;
+    let currentLang = "hi";
+
+    const translations = {
+      hi: {
+        navTopics: "📂 7 जल संरक्षण विषय",
+        navHistory: "🏛️ प्राचीन भारत",
+        navTools: "🧮 डिजिटल टूल्स व पब्लिक बोर्ड",
+        navAi: "🤖 AI असिस्टेंट",
+        navTest: "🧪 TEST",
+        btnAdmin: "🔐 एडमिन पैनल",
+        btnTheme: "☀️ लाइट मोड",
+        heroTitle: "स्मार्ट डिजिटल जल प्रबंधन प्रणाली",
+        heroDesc: "जल संरक्षण एवं वर्षा जल संग्रहण का सम्पूर्ण सचित्र और विस्तृत विवरण",
+        adminPanelTitle: "⚙️ ओनर/एडमिन कंट्रोल पैनल",
+        selectTopicLabel: "चुने किस विषय में वीडियो जोड़ना है:",
+        topicOpt1: "विषय 1: बाथरूम और स्वच्छता",
+        topicOpt2: "विषय 2: रसोईघर और बर्तन धोना",
+        topicOpt3: "विषय 3: कपड़े धोना और सफाई",
+        topicOpt4: "विषय 4: लीकेज की मरम्मत",
+        topicOpt5: "विषय 5: ग्रामीण जल व प्राकृतिक स्रोत",
+        topicOpt6: "विषय 6: डिजिटल जल प्रबंधन",
+        topicOpt7: "विषय 7: वर्षा जल संग्रहण (Rain Water Harvesting)",
+        videoTitlePlaceholder: "वीडियो की हेडिंग (उदा: नया वीडियो)",
+        manageVideosTitle: "🗑️ अपलोड किए गए वीडियो मैनेज करें:",
+        noVideosText: "कोई वीडियो अपलोड नहीं है।",
+        editorTitle: "🛠️ वेबसाइट कोड / डिज़ाइन एडिटर (हिडन लेयर)",
+        readingBarTitle: "डिजिटल रीडिंग मोड:",
+        readingBarDesc: "पढ़ने के लिए कंट्रोल सुविधाएँ",
+        btnFocus: "📖 फोकस मोड",
+        t1Header: "1. बाथरूम और स्वच्छता में जल संरक्षण (Bathroom & Hygiene)",
+        t1L1: "<strong>ब्रश और शेविंग के दौरान स्मार्ट आदतें:</strong> नल खुला रखने से प्रति मिनट 6 से 10 लीटर पानी व्यर्थ बह जाता है। नल बंद रखकर मग का इस्तेमाल करें।",
+        t1L2: "<strong>शावर बनाम बाल्टी:</strong> 10 मिनट के शावर में 80 से 100 लीटर पानी खर्च होता है, बाल्टी से नहाने पर केवल 15 से 20 लीटर।",
+        t2Header: "2. रसोईघर और बर्तन धोने में बचत (Kitchen & Dishwashing)",
+        t2L1: "<strong>टब/सिंक का प्रयोग:</strong> सीधे बहते नल से बर्तन न धोएं। एक टब में साबुन वाले पानी और दूसरे में साफ पानी का उपयोग करें।",
+        t2L2: "<strong>RO वेस्ट वॉटर:</strong> 1 लीटर साफ पानी पर 2-3 लीटर पानी बर्बाद होता है। इसे पोछा लगाने या कपड़े धोने में इस्तेमाल करें।",
+        t3Header: "3. कपड़े धोने और घर की सफाई में बचत (Laundry & House Cleaning)",
+        t3L1: "<strong>वाशिंग मशीन:</strong> केवल Full Load कपड़ों पर ही चलाएं। डिटर्जेंट के बाद निकला पानी फर्श सफाई में इस्तेमाल करें।",
+        t4Header: "4. लीकेज की तुरंत मरम्मत (Fixing Water Leaks)",
+        t4L1: "<strong>टपकते नल:</strong> प्रति सेकंड एक बूंद टपकने से महीने में 500 से 1000 लीटर पानी बर्बाद होता है। वाशर तुरंत बदलें।",
+        t5Header: "5. ग्रामीण जल व प्राकृतिक स्रोत संरक्षण (Rural Watershed)",
+        t5L1: "<strong>चेक डैम व बोरीबांध:</strong> छोटी नदियों/नालों पर पत्थरों या बालू की बोरियों से Check Dams बनाकर बहाव रोकें।",
+        t6Header: "6. स्मार्ट शहरों में डिजिटल जल प्रबंधन (Smart City Water)",
+        t6L1: "<strong>स्मार्ट सेंसर:</strong> पाइपलाइनों में IoT आधारित डिजिटल प्रेशर सेंसर लगाएं जो लीकेज होने पर अलर्ट भेजते हैं।",
+        t7Header: "7. वर्षा जल संग्रहण (Rain Water Harvesting)",
+        t7L1: "<strong>छत के पानी का संचयन:</strong> बारिश के पानी को छत से पाइप के माध्यम से टैंक या भूजल रिचार्ज पिट में एकत्र करें।",
+        ancientTitle: "🏛️ प्राचीन एवं ऐतिहासिक भारत में जल संरक्षण",
+        ancientSubTitle: "वैदिक काल से मध्यकालीन इतिहास तक की जल-प्रबंधन प्रणालियाँ",
+        pdfBoxText: "📖 पूरा स्टडी नोट्स पढ़ने के लिए नीचे दिए गए बटन पर क्लिक करके PDF डाउनलोड करें:",
+        downloadNotesBtn: "📥 स्टडी नोट्स PDF डाउनलोड करें",
+        ancientTopicHeader: "विषय सूची एवं मुख्य बिंदु",
+        ancientPoint1: "<strong>सिंधु घाटी सभ्यता (धोलावीरा):</strong> विश्व की सबसे प्राचीन जल संचयन प्रणाली जहाँ पत्थरों से कटाई करके विशाल जलाशय बनाए गए थे।",
+        ancientPoint2: "<strong>मौर्य काल (सुदर्शन झील):</strong> गुजरात के जूनागढ़ में चंद्रगुप्त मौर्य द्वारा निर्मित सुदर्शन झील प्राचीन सिंचाई तकनीक का अद्भुत उदाहरण है।",
+        ancientPoint3: "<strong>चोल कालीन जल संरचनाएँ (कल्लनई बाँध):</strong> कावेरी नदी पर निर्मित 'ग्रैंड एनीकट' दुनिया के सबसे पुराने कार्यरत जल बाँधों में से एक है।",
+        ancientPoint4: "<strong>पारंपरिक संरचनाएँ (बावड़ी, टांका व कुएँ):</strong> राजस्थान और गुजरात में वर्षा जल को संग्रहित करने की विशेष underground तकनीकें।",
+        toolsTitle: "🧮 डिजिटल नापने के टूल्स व पब्लिक शेयरिंग बोर्ड",
+        calcTitle: "📊 डिजिटल जल खपत मापक",
+        calcShowerLabel: "नहाने का समय (मिनट):",
+        calcDishesLabel: "बर्तन धोने के फेरे:",
+        noteTitle: "📝 पर्सनल नोटपैड (केवल आपके लिए)",
+        saveNoteBtn: "💾 नोट सेव करें",
+        boardTitle: "🌐 पब्लिक लाइव कम्युनिटी बोर्ड (सबके लिए दृश्यमान)",
+        boardDesc: "यहाँ आप जो भी जानकारी पोस्ट करेंगे, वह इस वेबसाइट के सभी visitors को live दिखेगी।",
+        namePlaceholder: "आपका नाम (उदा: राहुल कुमार)",
+        postPlaceholder: "यहाँ अपनी जानकारी / विचार लिखें...",
+        postBtn: "🚀 पब्लिक बोर्ड पर पोस्ट करें (Share Live)",
+        livePostsHeading: "📢 लाइव साझा की गई जानकारियाँ:",
+        noPostsMsg: "अभी तक किसी ने कोई जानकारी साझा नहीं की है।",
+        aiTitle: "🤖 AI जल सहायक",
+        aiQueryPlaceholder: "सवाल लिखें...",
+        quizTitle: "🧪 ऑनलाइन जल संरक्षण परीक्षा (MCQ Test)",
+        dashTitle: "📊 डिजिटल परीक्षा परिणाम",
+        statTotalLbl: "कुल प्रश्न",
+        statCorrectLbl: "सही उत्तर",
+        statIncorrectLbl: "गलत उत्तर",
+        statPercentLbl: "प्रतिशत (%)",
+        reviewTitle: "❌ गलत प्रश्नों का उत्तर विश्लेषण:",
+        submitQuizBtn: "📊 रिजल्ट देखें (Submit Test)",
+        certTitle: "📜 जल संरक्षण हीरो प्रमाण पत्र जनरेटर",
+        certDesc: "अपना नाम लिखें और अपना आधिकारिक प्रमाण पत्र डाउनलोड करें:",
+        downloadCertBtn: "🎓 सर्टिफिकेट डाउनलोड करें",
+        pledgeTitle: "💧 जल संरक्षण महा-संकल्प",
+        pledgeBtn: "मैं पानी बचाने का संकल्प लेता हूँ 💧",
+        pledgeCountTxt: "लोगों ने संकल्प लिया",
+        cancelBtn: "रद्द करें (Cancel)",
+        footerTxt: "© 2026 SaveWater Digital Pro | जल ही जीवन है 💧"
+      },
+      en: {
+        navTopics: "📂 7 Water Topics",
+        navHistory: "🏛️ Ancient India",
+        navTools: "🧮 Digital Tools & Public Board",
+        navAi: "🤖 AI Assistant",
+        navTest: "🧪 TEST",
+        btnAdmin: "🔐 Admin Panel",
+        btnTheme: "☀️ Light Mode",
+        heroTitle: "Smart Digital Water Management System",
+        heroDesc: "Comprehensive illustrated and detailed guide to water conservation and rainwater harvesting",
+        adminPanelTitle: "⚙️ Owner/Admin Control Panel",
+        selectTopicLabel: "Select topic to add video:",
+        topicOpt1: "Topic 1: Bathroom & Hygiene",
+        topicOpt2: "Topic 2: Kitchen & Dishwashing",
+        topicOpt3: "Topic 3: Laundry & Cleaning",
+        topicOpt4: "Topic 4: Fixing Leaks",
+        topicOpt5: "Topic 5: Rural Watershed",
+        topicOpt6: "Topic 6: Digital Water Management",
+        topicOpt7: "Topic 7: Rain Water Harvesting",
+        videoTitlePlaceholder: "Video Title",
+        manageVideosTitle: "🗑️ Manage Uploaded Videos:",
+        noVideosText: "No uploaded videos found.",
+        editorTitle: "🛠️ Website Code / Design Editor (Hidden Layer)",
+        readingBarTitle: "Digital Reading Mode:",
+        readingBarDesc: "Reading control controls",
+        btnFocus: "📖 Focus Mode",
+        t1Header: "1. Water Conservation in Bathroom & Hygiene",
+        t1L1: "<strong>Smart Habits During Brushing & Shaving:</strong> Running taps waste 6-10 liters per minute.",
+        t1L2: "<strong>Shower vs Bucket:</strong> 10-min shower uses 80-100 liters, bucket bath uses 15-20 liters.",
+        t2Header: "2. Kitchen & Dishwashing Water Savings",
+        t2L1: "<strong>Use Tub/Sink:</strong> Avoid washing dishes under running water.",
+        t2L2: "<strong>RO Waste Water:</strong> Reuse RO wastewater for mopping or laundry.",
+        t3Header: "3. Laundry & House Cleaning Savings",
+        t3L1: "<strong>Washing Machine:</strong> Run on Full Load only.",
+        t4Header: "4. Fixing Water Leaks Immediately",
+        t4L1: "<strong>Dripping Taps:</strong> One drop per second wastes 500-1000 liters a month.",
+        t5Header: "5. Rural Watershed & Natural Source Protection",
+        t5L1: "<strong>Check Dams:</strong> Build small stone/sandbag Check Dams.",
+        t6Header: "6. Digital Water Management in Smart Cities",
+        t6L1: "<strong>Smart Sensors:</strong> Install IoT digital pressure sensors.",
+        t7Header: "7. Rain Water Harvesting System",
+        t7L1: "<strong>Rooftop Harvesting:</strong> Collect rooftop rainwater into tanks.",
+        ancientTitle: "🏛️ Water Conservation in Ancient India",
+        ancientSubTitle: "Water management systems from Vedic period to Medieval history",
+        pdfBoxText: "📖 Click the button below to download the full study notes PDF:",
+        downloadNotesBtn: "📥 Download Study Notes PDF",
+        ancientTopicHeader: "Table of Contents & Key Points",
+        ancientPoint1: "<strong>Indus Valley Civilization (Dholavira):</strong> Ancient water harvesting system.",
+        ancientPoint2: "<strong>Mauryan Era (Sudarshana Lake):</strong> Sudarshana Lake in Junagadh, Gujarat.",
+        ancientPoint3: "<strong>Chola Water Structures (Kallanai Dam):</strong> 'Grand Anicut' on Cauvery river.",
+        ancientPoint4: "<strong>Traditional Structures (Stepwells & Tanks):</strong> Underground rainwater harvesting.",
+        toolsTitle: "🧮 Digital Measurement Tools & Public Board",
+        calcTitle: "📊 Digital Water Usage Calculator",
+        calcShowerLabel: "Shower Time (minutes):",
+        calcDishesLabel: "Dishwashing Cycles:",
+        noteTitle: "📝 Personal Notepad (Private)",
+        saveNoteBtn: "💾 Save Note",
+        boardTitle: "🌐 Public Live Community Board (Visible to All)",
+        boardDesc: "Information posted here is live for all site visitors.",
+        namePlaceholder: "Your Name",
+        postPlaceholder: "Write thoughts here...",
+        postBtn: "🚀 Post to Public Board (Share Live)",
+        livePostsHeading: "📢 Live Shared Updates:",
+        noPostsMsg: "No posts available yet.",
+        aiTitle: "🤖 AI Water Assistant",
+        aiQueryPlaceholder: "Type your query...",
+        quizTitle: "🧪 Online Water Conservation Exam (MCQ Test)",
+        dashTitle: "📊 Digital Test Scorecard",
+        statTotalLbl: "Total Qs",
+        statCorrectLbl: "Correct",
+        statIncorrectLbl: "Incorrect",
+        statPercentLbl: "Percentage (%)",
+        reviewTitle: "❌ Answer Analysis for Incorrect Qs:",
+        submitQuizBtn: "📊 View Result (Submit Test)",
+        certTitle: "📜 Water Conservation Hero Certificate Generator",
+        certDesc: "Enter your name and download your official certificate:",
+        downloadCertBtn: "🎓 Download Certificate",
+        pledgeTitle: "💧 Water Conservation Grand Pledge",
+        pledgeBtn: "I Pledge to Save Water 💧",
+        pledgeCountTxt: "people have taken pledge",
+        cancelBtn: "Cancel",
+        footerTxt: "© 2026 SaveWater Digital Pro | Water is Life 💧"
+      }
+    };
+    const mcqQuestionsHI = [
+      { q: "1. ब्रश करते समय नल बंद रखने से प्रति मिनट लगभग कितना पानी बचता है?", options: ["1 से 2 लीटर", "6 से 10 लीटर", "20 लीटर", "50 लीटर"], answer: 1 },
+      { q: "2. 10 मिनट के शावर स्नान में औसतन कितना पानी खर्च होता है?", options: ["15-20 लीटर", "30-40 लीटर", "80-100 लीटर", "200 लीटर"], answer: 2 },
+      { q: "3. वर्षा जल संग्रहण (Rain Water Harvesting) का मुख्य उद्देश्य क्या है?", options: ["नदी साफ करना", "भूजल (Groundwater) का स्तर बढ़ाना", "कपड़े धोना", "बिजली बनाना"], answer: 1 },
+      { q: "4. विश्व जल दिवस (World Water Day) कब मनाया जाता है?", options: ["15 जनवरी", "22 मार्च", "5 जून", "15 अगस्त"], answer: 1 },
+      { q: "5. छोटी नदियों या नालों पर पानी रोकने के लिए क्या बनाया जाता है?", options: ["Check Dam (चेक डैम)", "पूल", "फ्लाईओवर", "सड़क"], answer: 0 }
+    ];
+
+    const mcqQuestionsEN = [
+      { q: "1. About how much water is saved per minute by keeping the tap closed while brushing?", options: ["1 to 2 liters", "6 to 10 liters", "20 liters", "50 liters"], answer: 1 },
+      { q: "2. On average, how much water is used in a 10-minute shower?", options: ["15-20 liters", "30-40 liters", "80-100 liters", "200 liters"], answer: 2 },
+      { q: "3. What is the main objective of Rainwater Harvesting?", options: ["Cleaning rivers", "Increasing groundwater level", "Washing clothes", "Generating electricity"], answer: 1 },
+      { q: "4. When is World Water Day celebrated?", options: ["15 January", "22 March", "5 June", "15 August"], answer: 1 },
+      { q: "5. What is constructed across small rivers or streams to store water?", options: ["Check Dam", "Bridge", "Flyover", "Road"], answer: 0 }
+    ];
+
+    function createBubbles() {
+      const container = document.getElementById("bubblesContainer");
+      for (let i = 0; i < 15; i++) {
+        let bubble = document.createElement("div");
+        bubble.className = "bubble";
+        let size = Math.random() * 30 + 10;
+        bubble.style.width = size + "px";
+        bubble.style.height = size + "px";
+        bubble.style.left = Math.random() * 100 + "%";
+        bubble.style.animationDuration = (Math.random() * 8 + 6) + "s";
+        bubble.style.animationDelay = (Math.random() * 5) + "s";
+        container.appendChild(bubble);
+      }
+    }
+    createBubbles();
+
+    function showSection(sectionId) {
+      document.querySelectorAll("section").forEach(sec => {
+        if (sec.id !== "admin-container") sec.style.display = "none";
+      });
+      document.querySelectorAll("nav a").forEach(a => a.classList.remove("active"));
+
+      if (sectionId === 'topics') {
+        document.getElementById("topics-section").style.display = "block";
+        document.getElementById("nav-topics").classList.add("active");
+      } else if (sectionId === 'history') {
+        document.getElementById("history-section").style.display = "block";
+        document.getElementById("nav-history").classList.add("active");
+      } else if (sectionId === 'tools') {
+        document.getElementById("tools-section").style.display = "block";
+        document.getElementById("nav-tools").classList.add("active");
+      } else if (sectionId === 'ai-section') {
+        document.getElementById("ai-section").style.display = "block";
+        document.getElementById("nav-ai").classList.add("active");
+      } else if (sectionId === 'test-section') {
+        document.getElementById("test-section").style.display = "block";
+        document.getElementById("nav-test").classList.add("active");
+      }
+      window.scrollTo(0, 0);
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("light-mode");
+      const btn = document.getElementById("themeToggleBtn");
+      btn.innerText = document.body.classList.contains("light-mode") ? "🌙 डार्क मोड" : translations[currentLang].btnTheme;
+    }
+
+    function toggleFocusMode() { document.body.classList.toggle("focus-mode"); }
+
+    function changeFontSize(delta) {
+      currentFontSize += delta;
+      if (currentFontSize < 12) currentFontSize = 12;
+      if (currentFontSize > 24) currentFontSize = 24;
+      document.documentElement.style.setProperty('--base-font-size', currentFontSize + 'px');
+    }
+
+    function toggleLanguage() {
+      currentLang = (currentLang === "hi") ? "en" : "hi";
+      document.getElementById("langToggleBtn").innerText = currentLang === "hi" ? "🌐 Lang: HI / EN" : "🌐 Lang: EN / HI";
+      applyTranslations();
+      renderQuizQuestions();
+    }
+
+    function applyTranslations() {
+      const t = translations[currentLang];
+      document.querySelectorAll("[data-key]").forEach(el => {
+        const key = el.getAttribute("data-key");
+        if (t[key]) el.innerHTML = t[key];
+      });
+      document.querySelectorAll("[data-key-placeholder]").forEach(el => {
+        const key = el.getAttribute("data-key-placeholder");
+        if (t[key]) el.placeholder = t[key];
+      });
+    }
+
+    function openKeypad() { document.getElementById("keypadModal").style.display = "flex"; }
+    function closeKeypad() { document.getElementById("keypadModal").style.display = "none"; clearPin(); }
+    function pressKey(num) { if (enteredPin.length < 4) { enteredPin += num; updatePinDisplay(); } }
+    function clearPin() { enteredPin = ""; updatePinDisplay(); }
+    function backspacePin() { enteredPin = enteredPin.slice(0, -1); updatePinDisplay(); }
+    function updatePinDisplay() { document.getElementById("pinDisplay").innerText = "*".repeat(enteredPin.length); }
+
+    function submitPinForm() {
+      document.getElementById("hiddenPinInput").value = enteredPin;
+      document.getElementById("pinLoginForm").submit();
+    }
+
+    function renderQuizQuestions() {
+      const container = document.getElementById("questionsContainer");
+      container.innerHTML = "";
+      const qList = currentLang === "hi" ? mcqQuestionsHI : mcqQuestionsEN;
+
+      qList.forEach((qObj, index) => {
+        const card = document.createElement("div");
+        card.className = "mcq-card";
+        let optionsHTML = "";
+        qObj.options.forEach((opt, optIdx) => {
+          optionsHTML += `
+            <label class="mcq-option-label">
+              <input type="radio" name="question_${index}" value="${optIdx}">
+              <span>${opt}</span>
+            </label>
+          `;
+        });
+        card.innerHTML = `<div class="mcq-question">${qObj.q}</div><div class="mcq-options">${optionsHTML}</div>`;
+        container.appendChild(card);
+      });
+    }
+    renderQuizQuestions();
+
+    function submitQuiz() {
+      const qList = currentLang === "hi" ? mcqQuestionsHI : mcqQuestionsEN;
+      let total = qList.length, correct = 0;
+      let wrongList = [];
+
+      qList.forEach((qObj, idx) => {
+        const selected = document.querySelector(`input[name="question_${idx}"]:checked`);
+        if (selected) {
+          const userAns = parseInt(selected.value);
+          if (userAns === qObj.answer) correct++;
+          else wrongList.push({ q: qObj.q, userAns: qObj.options[userAns], correctAns: qObj.options[qObj.answer] });
+        } else {
+          wrongList.push({ q: qObj.q, userAns: currentLang === "hi" ? "उत्तर नहीं दिया" : "Not Answered", correctAns: qObj.options[qObj.answer] });
+        }
+      });
+
+      document.getElementById("statTotal").innerText = total;
+      document.getElementById("statCorrect").innerText = correct;
+      document.getElementById("statIncorrect").innerText = total - correct;
+      document.getElementById("statPercent").innerText = Math.round((correct / total) * 100) + "%";
+
+      const reviewDiv = document.getElementById("wrongQuestionsReview");
+      reviewDiv.innerHTML = wrongList.length === 0 ? `<p style="color: #00ff87;">🎉 बधाई हो! सभी उत्तर सही हैं!</p>` : "";
+      wrongList.forEach(item => {
+        reviewDiv.innerHTML += `<div style="background: rgba(255,16,83,0.08); padding:10px; border-radius:8px; margin-bottom:10px;"><div style="font-weight:bold;">${item.q}</div><div style="color:#ff4d4d;">❌ ${item.userAns}</div><div style="color:#00ff87;">✅ ${item.correctAns}</div></div>`;
+      });
+
+      document.getElementById("digitalScoreDashboard").style.display = "block";
+    }
+
+    function calculateWaterUsage() {
+      const showerMinutes = parseFloat(document.getElementById("calcShower").value) || 0;
+      const dishCycles = parseFloat(document.getElementById("calcDishes").value) || 0;
+      const total = (showerMinutes * 9) + (dishCycles * 15);
+      document.getElementById("calcResult").innerText = "अनुमानित खपत: " + total + " लीटर/दिन";
+    }
+
+    function saveNotes() {
+      localStorage.setItem("savewater_private_note", document.getElementById("noteText").value);
+      document.getElementById("noteStatus").innerText = "✅ नोट सेव हो गया!";
+      setTimeout(() => document.getElementById("noteStatus").innerText = "", 3000);
+    }
+    document.getElementById("noteText").value = localStorage.getItem("savewater_private_note") || "";
+
+    function askAi() {
+      const q = document.getElementById("aiQuery").value.trim();
+      if (!q) return;
+      const chatBox = document.getElementById("aiChatBox");
+      chatBox.innerHTML += `<div><strong>आप:</strong> ${q}</div>`;
+      chatBox.innerHTML += `<div style="color: #00f2fe; margin-bottom: 10px;"><strong>असिस्टेंट:</strong> जल संरक्षण के लिए नल बंद रखें और वर्षा जल संचित करें।</div>`;
+      document.getElementById("aiQuery").value = "";
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function takePledge() {
+      pledgeCount++;
+      document.getElementById("counterDisplay").innerText = pledgeCount.toLocaleString('hi-IN');
+      document.getElementById("pledgeModal").style.display = "flex";
+    }
+    function closePledgeModal() { document.getElementById("pledgeModal").style.display = "none"; }
+
+    function startCertificateGeneration() {
+      const name = document.getElementById("userNameInput").value.trim();
+      if (!name) { alert("कृपया नाम दर्ज करें!"); return; }
+      const element = document.createElement("div");
+      element.style.padding = "40px";
+      element.style.border = "10px solid #00f2fe";
+      element.style.background = "#020813";
+      element.style.color = "#e0f7fa";
+      element.innerHTML = `<h1 style="color:#00ff87;">SaveWater Digital Pro</h1><h2>जल संरक्षण हीरो प्रमाण पत्र</h2><h3>${name}</h3><p>ने जल संरक्षण में सक्रिय भाग लिया है।</p>`;
+      html2pdf().from(element).save(`Certificate_${name}.pdf`);
+    }
+
+    function downloadStudyNotesPDF() {
+      html2pdf().from(document.getElementById("pdf-content")).save('Ancient_Water_Notes.pdf');
+    }
+  </script>
+</body>
+</html>
+    
