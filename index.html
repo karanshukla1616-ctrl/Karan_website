@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SaveWater Digital Pro | Adhunik Jal Prabandhan Portal</title>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    :root {
+      --bg-color: #020813;
+      --card-bg: rgba(10, 25, 47, 0.85);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --text-color: #e0f7fa;
+      --header-bg: rgba(2, 11, 20, 0.9);
+      --input-bg: #010a14;
+      --base-font-size: 16px;
+      
+      --rainbow-1: linear-gradient(135deg, #ff007f, #7f00ff);
+      --rainbow-2: linear-gradient(135deg, #00f2fe, #4facfe);
+      --rainbow-3: linear-gradient(135deg, #00ff87, #60efff);
+      --rainbow-4: linear-gradient(135deg, #ff9900, #ff0055);
+      --rainbow-5: linear-gradient(135deg, #ff00cc, #3333ff);
+      --rainbow-6: linear-gradient(135deg, #ffea00, #ff1053);
+    }
+
+    body.light-mode {
+      --bg-color: #f0f4f8;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --glass-border: rgba(0, 0, 0, 0.15);
+      --text-color: #1a202c;
+      --header-bg: rgba(255, 255, 255, 0.95);
+      --input-bg: #ffffff;
+    }
+
+    body.focus-mode {
+      --bg-color: #000000;
+      --card-bg: #0d0d0d;
+      --text-color: #ffffff;
+      --glass-border: #00ff87;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: var(--base-font-size); }
+    body { 
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+      background: var(--bg-color); 
+      color: var(--text-color); 
+      line-height: 1.7; 
+      overflow-x: hidden;
+      position: relative;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 6px;
+      background: linear-gradient(90deg, #ff007f, #00f2fe, #00ff87, #ffea00);
+      width: 0%; z-index: 10000; box-shadow: 0 0 10px #00f2fe;
+    }
+
+    .bubbles-container {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -1; pointer-events: none; overflow: hidden;
+    }
+    .bubble {
+      position: absolute; bottom: -50px;
+      background: rgba(0, 242, 254, 0.15);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      border-radius: 50%;
+      animation: rise 10s infinite ease-in;
+    }
+    @keyframes rise {
+      0% { transform: translateY(0) scale(1); opacity: 0; }
+      50% { opacity: 0.6; }
+      100% { transform: translateY(-1000px) scale(1.3); opacity: 0; }
+    }
+
+    header { 
+      position: sticky; top: 0; z-index: 1000; 
+      background: var(--header-bg); backdrop-filter: blur(16px); 
+      border-bottom: 1px solid var(--glass-border); padding: 15px 20px; 
+    }
+    .nav-container { max-width: 1200px; margin: auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; }
+    .logo { 
+      font-size: 1.8rem; font-weight: 900; 
+      background: linear-gradient(90deg, #ff007f, #00f2fe, #00ff87); 
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+    }
+    nav { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    
+    .btn, nav a { 
+      padding: 10px 22px; border-radius: 30px; color: #ffffff; text-decoration: none; 
+      font-size: 0.95rem; font-weight: 800; cursor: pointer; transition: all 0.4s ease;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+    .btn:hover, nav a:hover, nav a.active { 
+      transform: translateY(-3px) scale(1.03); box-shadow: 0 0 25px currentColor;
+    }
+
+    #nav-topics { background: var(--rainbow-1); }
+    #nav-history { background: var(--rainbow-5); }
+    #nav-tools { background: var(--rainbow-2); }
+    #nav-ai { background: var(--rainbow-3); color: #000; }
+    #nav-test { background: var(--rainbow-6); color: #000; }
+    .btn-mode { background: linear-gradient(135deg, #ffea00, #ff9900); color: #000; }
+    .btn-lang { background: linear-gradient(135deg, #00f2fe, #00ff87); color: #000; }
+    .admin-lock-btn { background: rgba(0, 255, 135, 0.2); border: 1px solid #00ff87; color: #00ff87; }
+    .btn-logout { background: #ff1053; color: #fff; border: 1px solid #ff4d4d; }
+
+    .btn-read-ctrl { 
+      background: linear-gradient(135deg, #00f2fe, #7f00ff); 
+      color: #fff; border: 1px solid #00f2fe;
+    }
+
+    .btn-delete-admin {
+      background: linear-gradient(135deg, #ff1053, #ff0055);
+      color: #fff; padding: 6px 12px; font-size: 0.85rem; font-weight: bold;
+      border-radius: 6px; border: 1px solid #ff4d4d; cursor: pointer; text-decoration: none; display: inline-block;
+    }
+
+    section { max-width: 1150px; margin: auto; padding: 40px 20px; }
+
+    .digital-card { 
+      background: var(--card-bg); backdrop-filter: blur(12px);
+      border-radius: 20px; padding: 30px; border: 1px solid var(--glass-border); 
+      margin-bottom: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); 
+    }
+    .digital-card h3 { color: #00f2fe; margin-bottom: 15px; font-size: 1.7rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px; }
+    .digital-card ul { margin-left: 20px; margin-bottom: 20px; }
+    .digital-card li { margin-bottom: 12px; font-size: 1.1rem; }
+
+    .card-img-box { text-align: center; margin: 20px 0; }
+    .card-img {
+      width: 100%; max-width: 750px; height: auto; max-height: 350px; object-fit: cover;
+      border-radius: 15px; border: 1px solid rgba(0, 242, 254, 0.4);
+    }
+
+    .custom-video-item {
+      background: rgba(0, 255, 135, 0.05);
+      border: 1px solid #00ff87;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 10px;
+    }
+    .custom-video-item h4 { color: #00ff87; margin-bottom: 8px; }
+
+    .reading-bar { 
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;
+      background: rgba(0, 0, 0, 0.25); padding: 18px 25px; border-radius: 20px; 
+      margin-bottom: 25px; border: 1.5px solid #00ff87; 
+    }
+
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 8, 19, 0.92); z-index: 3000; justify-content: center; align-items: center; }
+    .keypad-box { background: #0a192f; border: 2px solid #00ff87; border-radius: 20px; padding: 25px; width: 320px; text-align: center; box-shadow: 0 0 25px rgba(0, 255, 135, 0.4); }
+    .pin-display { background: #020813; border: 1.5px solid #00ff87; border-radius: 10px; height: 50px; line-height: 50px; font-size: 1.5rem; letter-spacing: 6px; color: #00ff87; margin-bottom: 15px; }
+    .keypad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .key-btn { background: rgba(0, 255, 135, 0.08); border: 1px solid #00ff87; color: #00ff87; font-size: 1.2rem; font-weight: bold; padding: 12px; border-radius: 10px; cursor: pointer; }
+    .key-btn.clear { color: #ff4d4d; border-color: #ff4d4d; background: rgba(255, 77, 77, 0.1); }
+    .key-btn.submit { color: #020813; background: #00ff87; grid-column: span 3; margin-top: 5px; }
+    .close-modal-btn { margin-top: 10px; background: transparent; border: none; color: #888; font-size: 0.85rem; cursor: pointer; }
+
+    .digital-congrats-card {
+      background: rgba(10, 25, 47, 0.95);
+      border: 2px solid #00ff87;
+      border-radius: 24px;
+      padding: 40px 30px;
+      width: 90%;
+      max-width: 460px;
+      text-align: center;
+    }
+    .pledge-card-theme { border-color: #00f2fe; }
+
+    .animated-trophy { font-size: 4.5rem; display: inline-block; margin-bottom: 10px; }
+    .congrats-title {
+      font-size: 2.4rem; font-weight: 900;
+      background: linear-gradient(90deg, #ffea00, #00ff87, #00f2fe, #ff007f);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 12px; text-transform: uppercase;
+    }
+    .congrats-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255, 234, 0, 0.2); color: #ffea00; border: 1px solid #ffea00; 
+      padding: 6px 20px; border-radius: 30px; font-size: 0.9rem; font-weight: bold; margin-bottom: 20px;
+    }
+    .congrats-btn {
+      background: linear-gradient(135deg, #00ff87, #00f2fe);
+      color: #020813; font-weight: 900; font-size: 1.1rem; border: none;
+      padding: 14px 35px; border-radius: 30px; cursor: pointer;
+    }
+
+    .admin-panel { {% if is_owner %}display: block;{% else %}display: none;{% endif %} background: rgba(0, 255, 135, 0.08); border: 2px dashed #00ff87; border-radius: 15px; padding: 20px; max-width: 600px; margin: 0 auto 25px auto; }
+    .admin-panel select, .admin-panel input { width: 100%; padding: 12px; margin-bottom: 12px; background: #0a192f; border: 1px solid #00ff87; border-radius: 8px; color: #fff; }
+    
+    .admin-delete-list { margin-top: 20px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; border: 1px solid rgba(255, 77, 77, 0.4); }
+    .admin-delete-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+    .public-board-box { background: rgba(0, 242, 254, 0.05); border: 2px solid #00f2fe; border-radius: 18px; padding: 20px; margin-top: 25px; }
+    .post-card { background: rgba(1, 10, 20, 0.8); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; margin-top: 12px; position: relative; }
+    .post-author { color: #00ff87; font-weight: bold; font-size: 0.95rem; }
+    .post-time { color: #888; font-size: 0.75rem; margin-left: 10px; }
+    .post-text { margin-top: 8px; font-size: 1rem; word-break: break-word; }
+    .owner-delete-btn { position: absolute; right: 12px; top: 12px; background: #ff1053; border: none; color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer; text-decoration: none; }
+
+    .mcq-card { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 15px; padding: 20px; margin-bottom: 20px; }
+    .mcq-question { font-size: 1.15rem; font-weight: bold; color: #00f2fe; margin-bottom: 12px; }
+    .mcq-options { display: flex; flex-direction: column; gap: 10px; }
+    .mcq-option-label { display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05); padding: 10px 15px; border-radius: 8px; cursor: pointer; }
+    .mcq-option-label input { accent-color: #00ff87; width: 18px; height: 18px; }
+
+    #digitalScoreDashboard { display: none; background: rgba(10, 25, 47, 0.95); border: 2px solid #00f2fe; border-radius: 20px; padding: 25px; margin-bottom: 30px; }
+    .dashboard-header { text-align: center; font-size: 1.8rem; font-weight: bold; color: #00ff87; margin-bottom: 20px; }
+    .digital-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; text-align: center; }
+    .digital-stat-card { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; }
+    .stat-val { font-size: 1.8rem; font-weight: 900; }
+    .stat-lbl { font-size: 0.85rem; color: #aaa; }
+
+    .cert-pledge-card { background: var(--card-bg); border: 2px solid #00ff87; border-radius: 20px; padding: 30px; margin-top: 35px; text-align: center; }
+    .cert-input { padding: 12px; width: 100%; max-width: 400px; font-size: 1rem; border-radius: 8px; border: 1px solid #00ff87; background: var(--input-bg); color: var(--text-color); margin-bottom: 15px; text-align: center; }
+    .pledge-box { margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--glass-border); }
+    .pledge-count { font-size: 1.4rem; font-weight: bold; color: #00ff87; margin-top: 15px; }
+
+    .download-box { background-color: rgba(0, 242, 254, 0.08); border: 1px solid #00f2fe; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 30px; }
+    .btn-download { display: inline-block; background: var(--rainbow-2); color: #000; padding: 12px 30px; font-size: 16px; font-weight: bold; text-decoration: none; border-radius: 30px; cursor: pointer; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+    .widget-box { background: var(--card-bg); padding: 25px; border-radius: 18px; border: 1px solid var(--glass-border); }
+    .widget-box input, .widget-box textarea { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--glass-border); border-radius: 10px; color: var(--text-color); margin: 8px 0 15px; font-size: 1rem; }
+    .res-text { font-weight: bold; color: #00ff87; background: rgba(0, 255, 135, 0.1); padding: 12px; border-radius: 10px; text-align: center; border: 1px solid #00ff87; }
+
+    #pdf-template-container { display: none; }
+    footer { text-align: center; padding: 25px; background: rgba(0,0,0,0.2); border-top: 1px solid var(--glass-border); margin-top: 40px; }
+  </style>
+</head>
+<body>
+
+  <div id="progress-bar"></div>
+  <div class="bubbles-container" id="bubblesContainer"></div>
+
+  <header>
+    <div class="nav-container">
+      <div class="logo">💧 SaveWater Digital Pro</div>
+      <nav>
+        <a onclick="showSection('topics')" id="nav-topics" class="active">📂 7 Jal Sanrakshan Vishay</a>
+        <a onclick="showSection('history')" id="nav-history">🏛️ Prachin Bharat</a>
+        <a onclick="showSection('tools')" id="nav-tools">🧮 Digital Tools & Board</a>
+        <a onclick="showSection('ai-section')" id="nav-ai">🤖 AI Assistant</a>
+        <a onclick="showSection('test-section')" id="nav-test">🧪 TEST</a>
+        <button class="btn btn-lang" id="langToggleBtn" onclick="toggleLanguage()">🌐 Lang: HI / EN</button>
+        {% if is_owner %}
+        <a href="/logout" class="btn btn-logout">🔓 Logout (Owner)</a>
+        {% else %}
+        <button class="btn admin-lock-btn" onclick="openKeypad()">🔐 Admin Panel</button>
+        {% endif %}
+        <button class="btn btn-mode" id="themeToggleBtn" onclick="toggleTheme()">☀️ Light Mode</button>
+      </nav>
+    </div>
+  </header>
+
+  <section style="text-align: center; padding: 40px 20px 20px;">
+    <h1 style="font-size: 2.8rem; background: linear-gradient(90deg, #00f2fe, #ff007f); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Smart Digital Water Management System</h1>
+    <p>Jal sanrakshan evam varsha jal sangrahann ka sampurna vivaran</p>
+  </section>
+
+  <!-- ADMIN CONTROL PANEL -->
+  <section id="admin-container" style="max-width: 800px; margin: auto; padding: 0 20px;">
+    <div class="admin-panel" id="adminPanel">
+      <h3>⚙️ Owner / Admin Control Panel</h3>
+      
+      <form action="/add_video" method="POST">
+        <label style="color: #00ff87; display: block; margin-bottom: 5px;">Chune kis vishay me video jorna hai:</label>
+        <select name="topic_key" id="topicSelect" required>
+          <option value="topic-1">Vishay 1: Bathroom & Swachhata</option>
+          <option value="topic-2">Vishay 2: Rasoi aur Bartan</option>
+          <option value="topic-3">Vishay 3: Kapde Dhona</option>
+          <option value="topic-4">Vishay 4: Leakage Marammat</option>
+          <option value="topic-5">Vishay 5: Gramin Jal Srot</option>
+          <option value="topic-6">Vishay 6: Digital Jal Prabandhan</option>
+          <option value="topic-7">Vishay 7: Rain Water Harvesting</option>
+        </select>
+
+        <input type="text" name="title" placeholder="Video Title (Jaise: Naya Video)" required>
+        <input type="text" name="video_url" placeholder="YouTube Embed URL (https://www.youtube.com/embed/...)" required>
+        <button type="submit" class="btn btn-save" style="width: 100%; background: #00ff87; color: #020813; font-weight: bold;">➕ Video Publish Karein</button>
+      </form>
+
+      <div class="admin-delete-list">
+        <h4 style="color: #ff4d4d; margin-bottom: 10px;">🗑️ Uploaded Videos Manage Karein:</h4>
+        {% if videos %}
+          {% for vid in videos %}
+          <div class="admin-delete-item">
+            <span style="font-size: 0.85rem; color: #fff;">{{ vid[2] }} ({{ vid[1] }})</span>
+            <a href="/delete_video/{{ vid[0] }}" class="btn-delete-admin">🗑️ Delete</a>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p style="color: #aaa; font-size: 0.85rem;">Koi video upload nahi hai.</p>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 TOPICS SECTION -->
+  <section id="topics-section">
+    <div class="reading-bar">
+      <div>
+        <span>👁️ <strong>Digital Reading Mode:</strong> Reading controls</span>
+      </div>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn btn-read-ctrl" onclick="changeFontSize(1)">🔍 Font +</button>
+        <button class="btn btn-read-ctrl" onclick="changeFontSize(-1)">🔍 Font -</button>
+        <button class="btn btn-read-ctrl" onclick="toggleFocusMode()">📖 Focus Mode</button>
+      </div>
+    </div>
+
+    <!-- TOPIC 1 -->
+    <div class="digital-card" id="topic-1">
+      <h3>1. Bathroom aur Swachhata me Jal Sanrakshan</h3>
+      <ul>
+        <li><strong>Brushing ke dauran aadat:</strong> Nal khula rakhne se pani vyarth behta hai. Mug ka prayog karein.</li>
+        <li><strong>Shower vs Balti:</strong> Shower me jyada pani kharch hota hai, balti se kam.</li>
+      </ul>
+      <div class="card-img-box"><img class="card-img" src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1000&q=80" alt="Bathroom"></div>
+      <div class="custom-video-list">
+        {% for vid in videos %}
+          {% if vid[1] == 'topic-1' %}
+          <div class="custom-video-item" style="position: relative;">
+            <h4>📹 {{ vid[2] }}</h4>
+            <div style="position:relative; width:100%; padding-bottom:56.25%; margin-top:10px;"><iframe src="{{ vid[3] }}" style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:10px;" frameborder="0" allowfullscreen></iframe></div>
+            {% if is_owner %}
+            <a href="/delete_video/{{ vid[0] }}" class="btn-delete-admin" style="margin-top: 10px;">🗑️ Delete Video</a>
+            {% endif %}
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- TOPIC 2 -->
+    <div class="digital-card" id="topic-2">
+      <h3>2. Rasoi aur Bartan Dhone me Bachat</h3>
+      <ul>
+        <li><strong>Tub ka prayog:</strong> Sidhe nal ke niche bartan na dhoyein.</li>
+        <li><strong>RO Waste Water:</strong> Is pani ka upyog safai me karein.</li>
+      </ul>
+      <div class="card-img-box"><img class="card-img" src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&q=80" alt="Kitchen"></div>
+      <div class="custom-video-list">
+        {% for vid in videos %}
+          {% if vid[1] == 'topic-2' %}
+          <div class="custom-video-item" style="position: relative;">
+            <h4>📹 {{ vid[2] }}</h4>
+            <div style="position:relative; width:100%; padding-bottom:56.25%; margin-top:10px;"><iframe src="{{ vid[3] }}" style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:10px;" frameborder="0" allowfullscreen></iframe></div>
+            {% if is_owner %}
+            <a href="/delete_video/{{ vid[0] }}" class="btn-delete-admin" style="margin-top: 10px;">🗑️ Delete Video</a>
+            {% endif %}
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- TOPIC 3 -->
+    <div class="digital-card" id="topic-3">
+      <h3>3. Kapde Dhona aur Safai</h3>
+      <ul>
+        <li><strong>Washing Machine:</strong> Kewal Full Load par chalayein.</li>
+      </ul>
+      <div class="card-img-box"><img class="card-img" src="https://images.unsplash.com/photo-1582735689369-4fe89db7114c?auto=format&fit=crop&w=1000&q=80" alt="Laundry"></div>
+      <div class="custom-video-list">
+        {% for vid in videos %}
+          {% if vid[1] == 'topic-3' %}
+          <div class="custom-video-item" style="position: relative;">
+            <h4>📹 {{ vid[2] }}</h4>
+            <div style="position:relative; width:100%; padding-bottom:56.25%; margin-top:10px;"><iframe src="{{ vid[3] }}" style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:10px;" frameborder="0" allowfullscreen></iframe></div>
+            {% if is_owner %}
+            <a href="/delete_video/{{ vid[0] }}" class="btn-delete-admin" style="margin-top: 10px;">🗑️ Delete Video</a>
+            {% endif %}
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- TOPIC 4 -->
+    <div class="digital-card" id="topic-4">
+      <h3>4. Leakage ki Marammat</h3>
+      <ul>
+        <li><strong>Tap Leakage:</strong> Turant washer badlein taaki pani barbad na ho.</li>
+      </ul>
+      <div class="card-img-box"><img class="card-img" src="https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1000&q=80" alt="Leaks"></div>
+      <div class="custom-video-list">
+        {% for vid in videos %}
+          {% if vid[1] == 'topic-4' %}
+          <div class="custom-video-item" style="position: relative;">
+            <h4>📹 {{ vid[2] }}</h4>
+            <div style="position:relative; width:100%; padding-bottom:56.25%; margin-top:10px;"><iframe src="{{ vid[3] }}" style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:10px;" frameborder="0" allowfullscreen></iframe></div>
+            {% if is_owner %}
+            <a href="/delete_video/{{ vid[0] }}" class="btn-delete-admin" style="margin-top: 10px;">🗑️ Delete Video</a>
+            {% endif %}
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- TOPIC 5 -->
+    <div class="digital-card" id="topic-5">
+      <h3>5. Gramin Jal aur Prakritik Srot</h3>
+      <ul>
+        <li><strong>Check Dam:</strong> Nadi aur nalo par check dam banayein.</li>
+      </ul>
+      <div class="card-img-box"><img class="card-img" src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80" alt="Rural"></div>
+      <div class="custom-video-list">
+        {% for vid in videos %}
+          {% if vid[1] == 'topic-5' %}
+          <div class="custom-video-item" style="position: relative;">
+            <h4>📹 {{ vid[2] }}</h4>
+            <div style="position:relative; width:100%; padding-bottom:56.25%; margin-top:10px;"><iframe src="{{ vid[3] }}" style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:10px;" frameborder="0" allowfullscreen></iframe></div>
+            {% if is_owner %}
+            <a href="/delete_video/{{ vid[0] }}" class="btn-delete-admin" style="margin-top: 10px;">🗑️ Delete Video</a>
+            {% endif %}
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- TOPIC 6 -->
+    <div class="digital-card" id="topic-6">
+      <h3>6. Digital Jal Prabandhan</h3>
+      <ul>
+        <li><strong>Smart Sensors:</strong> IoT sensors dwara leakage ka pata lagayein.</li>
+      </ul>
+      <div class="card-img-box"><img class="card-img" src="https://images.unsplash.com/photo-1477959858617-67f30ac4ce78?auto=format&fit=crop&w=1000&q=80" alt="Smart City"></div>
+      <div class="custom-video-list">
+        {% for vid in videos %}
+          {% if vid[1] == 'topic-6' %}
+          <div class="custom-video-item" style="position: relative;">
+            <h4>📹 {{ vid[2] }}</h4>
+            <div style="position:relative; width:100%; padding-bottom:56.25%; margin-top:10px;"><iframe src="{{ vid[3] }}" style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:10px;" frameborder="0" allowfullscreen></iframe></div>
+            {% if is_owner %}
+            <a href="/delete_video/{{ vid[0] }}" class="btn-delete-admin" style="margin-top: 10px;">🗑️ Delete Video</a>
+            {% endif %}
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- TOPIC 7 -->
+    <div class="digital-card" id="topic-7" style="border: 2px solid #00ff87;">
+      <h3 style="color: #00ff87;">7. Rain Water Harvesting</h3>
+      <ul>
+        <li><strong>Rooftop Collection:</strong> Chhat ke pani ko recharge pit me collect karein.</li>
+      </ul>
+      <div class="card-img-box"><img class="card-img" src="https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=1000&q=80" alt="Harvesting"></div>
+      <div class="custom-video-list">
+        {% for vid in videos %}
+          {% if vid[1] == 'topic-7' %}
+          <div class="custom-video-item" style="position: relative;">
+            <h4>📹 {{ vid[2] }}</h4>
+            <div style="position:relative; width:100%; padding-bottom:56.25%; margin-top:10px;"><iframe src="{{ vid[3] }}" style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:10px;" frameborder="0" allowfullscreen></iframe></div>
+            {% if is_owner %}
+            <a href="/delete_video/{{ vid[0] }}" class="btn-delete-admin" style="margin-top: 10px;">🗑️ Delete Video</a>
+            {% endif %}
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ANCIENT WATER CONSERVATION SECTION -->
+  <section id="history-section" style="display: none;">
+    <div class="digital-card">
+      <h2 style="color: #00f2fe; text-align: center; margin-bottom: 10px;">🏛️ Prachin Bharat me Jal Sanrakshan</h2>
+      <p style="text-align: center; color: #aaa; margin-bottom: 25px;">Vedic kaal se madhyakalin itihas tak</p>
+
+      <div class="download-box">
+        <p>📖 Pura study notes padhne ke liye niche diye gaye button par click karein:</p>
+        <button onclick="downloadStudyNotesPDF()" class="btn-download">📥 Study Notes PDF Download</button>
+      </div>
+
+      <h3>Vishay Suchi</h3>
+      <ul>
+        <li><strong>Indus Valley (Dholavira):</strong> Prachin jal sanchayan pranali.</li>
+        <li><strong>Mauryan Era (Sudarshana Lake):</strong> Sinchai ke liye nirmit jheel.</li>
+      </ul>
+      <div class="card-img-box"><img class="card-img" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80" alt="Ancient"></div>
+    </div>
+  </section>
+
+  <!-- TOOLS & PUBLIC BOARD SECTION -->
+  <section id="tools-section" style="display: none;">
+    <h2 style="text-align:center; margin-bottom:20px; color:#00f2fe;">🧮 Digital Tools & Public Board</h2>
+    <div class="grid-2">
+      <div class="widget-box">
+        <h3 style="color: #00f2fe;">📊 Water Usage Calculator</h3>
+        <label>Nahane ka samay (minute):</label>
+        <input type="number" id="calcShower" value="10" oninput="calculateWaterUsage()">
+        <label>Bartan dhone ke fere:</label>
+        <input type="number" id="calcDishes" value="3" oninput="calculateWaterUsage()">
+        <div class="res-text" id="calcResult">Anumanit khapat: 135 Liter/Din</div>
+      </div>
+
+      <div class="widget-box">
+        <h3 style="color: #ff007f;">📝 Personal Notepad</h3>
+        <textarea id="noteText" rows="5" placeholder="Personal notes likhein..."></textarea>
+        <button class="btn btn-save" style="width: 100%;" onclick="saveNotes()">💾 Note Save Karein</button>
+        <div id="noteStatus" style="margin-top: 10px; font-size: 0.9rem; color: #00ff87;"></div>
+      </div>
+    </div>
+
+    <!-- PUBLIC LIVE SHARED BOARD -->
+    <div class="public-board-box">
+      <h3 style="color: #00f2fe; margin-bottom: 10px;">🌐 Public Live Community Board</h3>
+      <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 15px;">Yahan aap jo bhi post karenge, wo sabhi visitors ko live dikhega.</p>
+      
+      <form action="/add_post" method="POST">
+        <input type="text" name="author" placeholder="Aapka Naam (Jaise: Rahul)" required>
+        <textarea name="text" rows="3" placeholder="Apne vichar likhein..." required></textarea>
+        <button type="submit" class="btn btn-save" style="width: 100%; background: #00f2fe; color: #020813; font-weight: bold;">🚀 Public Board par Post Karein</button>
+      </form>
+
+      <div style="margin-top: 25px;">
+        <h4 style="color: #00ff87; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;">📢 Live Shared Updates:</h4>
+        <div id="publicPostsContainer" style="margin-top: 15px;">
+          {% if posts %}
+            {% for post in posts %}
+            <div class="post-card">
+              <div>
+                <span class="post-author">👤 {{ post[1] }}</span>
+                <span class="post-time">🕒 {{ post[3] }}</span>
+              </div>
+              <div class="post-text">{{ post[2] }}</div>
+              {% if is_owner %}
+              <a href="/delete_post/{{ post[0] }}" class="owner-delete-btn">🗑️ Delete</a>
+              {% endif %}
+            </div>
+            {% endfor %}
+          {% else %}
+            <p style="color: #aaa; font-size: 0.9rem; margin-top: 10px;">Abhi tak koi post nahi hai.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI ASSISTANT SECTION -->
+  <section id="ai-section" style="display: none;">
+    <h2 style="text-align:center; margin-bottom:20px; color:#00ff87;">🤖 AI Jal Sahayak</h2>
+    <div class="widget-box" style="max-width: 800px; margin: auto;">
+      <div id="aiChatBox" style="height: 250px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border); margin-bottom: 15px;">
+        <div style="color: #00f2fe;"><strong>Assistant:</strong> Namaste! Aap jal sanrakshan ke vishay me puch sakte hain.</div>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <input type="text" id="aiQuery" placeholder="Sawal likhein..." style="flex: 1; margin: 0;">
+        <button class="btn btn-save" onclick="askAi()">Puchein</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEST SECTION -->
+  <section id="test-section" style="display: none;">
+    <h2 style="text-align:center; margin-bottom:20px; color:#ffea00;">🧪 Online Water Conservation Exam</h2>
+    
+    <div id="digitalScoreDashboard">
+      <div class="dashboard-header">📊 Digital Test Scorecard</div>
+      <div class="digital-grid">
+        <div class="digital-stat-card"><div class="stat-val" style="color: #00f2fe;" id="statTotal">0</div><div class="stat-lbl">Total Qs</div></div>
+        <div class="digital-stat-card"><div class="stat-val" style="color: #00ff87;" id="statCorrect">0</div><div class="stat-lbl">Correct</div></div>
+        <div class="digital-stat-card"><div class="stat-val" style="color: #ff1053;" id="statIncorrect">0</div><div class="stat-lbl">Incorrect</div></div>
+        <div class="digital-stat-card"><div class="stat-val" style="color: #ffea00;" id="statPercent">0%</div><div class="stat-lbl">Percentage</div></div>
+      </div>
+      <div class="review-container" style="margin-top: 25px; border-top: 1px dashed var(--glass-border); padding-top: 20px;">
+        <h3 style="color: #ff1053; margin-bottom: 15px;">❌ Answer Analysis:</h3>
+        <div id="wrongQuestionsReview"></div>
+      </div>
+    </div>
+
+    <form id="quizForm">
+      <div id="questionsContainer"></div>
+      <div style="text-align: center; margin-top: 30px;">
+        <button type="button" class="btn btn-save" style="font-size: 1.2rem; padding: 12px 35px;" onclick="submitQuiz()">📊 View Result (Submit Test)</button>
+      </div>
+    </form>
+
+    <div class="cert-pledge-card">
+      <h2 style="color: #00f2fe; margin-bottom: 10px;">📜 Certificate Generator</h2>
+      <input type="text" id="userNameInput" class="cert-input" placeholder="Apna pura naam darj karein">
+      <br>
+      <button class="btn btn-save" style="font-size: 1rem;" onclick="startCertificateGeneration()">🎓 Certificate Download Karein</button>
+
+      <div class="pledge-box">
+        <h3 style="color: #ffea00; margin-bottom: 10px;">💧 Jal Sanrakshan Maha-Sankalp</h3>
+        <button class="btn btn-read-ctrl" onclick="takePledge()">Main pani bachane ka sankalp leta hu 💧</button>
+        <div class="pledge-count"><span id="counterDisplay">1,250</span> logon ne sankalp liya</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KEYPAD MODAL -->
+  <div class="modal-overlay" id="keypadModal">
+    <div class="keypad-box">
+      <h3>🔢 Admin PIN Access (2010)</h3>
+      <div class="pin-display" id="pinDisplay"></div>
+      <div class="keypad-grid">
+        <button class="key-btn" onclick="pressKey('1')">1</button>
+        <button class="key-btn" onclick="pressKey('2')">2</button>
+        <button class="key-btn" onclick="pressKey('3')">3</button>
+        <button class="key-btn" onclick="pressKey('4')">4</button>
+        <button class="key-btn" onclick="pressKey('5')">5</button>
+        <button class="key-btn" onclick="pressKey('6')">6</button>
+        <button class="key-btn" onclick="pressKey('7')">7</button>
+        <button class="key-btn" onclick="pressKey('8')">8</button>
+        <button class="key-btn" onclick="pressKey('9')">9</button>
+        <button class="key-btn clear" onclick="clearPin()">C</button>
+        <button class="key-btn" onclick="pressKey('0')">0</button>
+        <button class="key-btn clear" onclick="backspacePin()">⌫</button>
+        <button class="key-btn submit" onclick="submitPinForm()">UNLOCK PANEL</button>
+      </div>
+      <button class="close-modal-btn" onclick="closeKeypad()">Radd Karein</button>
+    </div>
+  </div>
+
+  <form id="pinLoginForm" action="/login" method="POST" style="display: none;">
+    <input type="hidden" name="pin" id="hiddenPinInput">
+  </form>
+
+  <!-- PLEDGE MODAL -->
+  <div class="modal-overlay" id="pledgeModal">
+    <div class="digital-congrats-card pledge-card-theme">
+      <div class="animated-trophy">🎖️</div>
+      <h2 class="congrats-title">Bahut-bahut badhai!</h2>
+      <div class="congrats-badge">💧 WATER HERO PLEDGE TAKEN 💧</div>
+      <p style="color: #e0f7fa; font-size: 1.2rem; margin-bottom: 15px; font-weight: 600;">Aapne jal sanrakshan ka sankalp le liya hai!</p>
+      <button class="congrats-btn" onclick="closePledgeModal()">Dhanyawad!</button>
+    </div>
+  </div>
+
+  <!-- HIDDEN PDF CONTENT -->
+  <div id="pdf-template-container">
+    <div id="pdf-content" style="padding: 30px; font-family: Arial, sans-serif; color: #111; background: #fff;">
+      <h1 style="text-align: center; color: #0066cc;">Bharat me Jal Sanrakshan: Ek Adhyayan</h1>
+      <p>Vedic kaal se lekar madhyakalin itihas tak jal prabandhan ki unnat pranali.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 SaveWater Digital Pro | Jal Hi Jivan Hai 💧</p>
+  </footer>
+
+  <script>
+    let enteredPin = "";
+    let pledgeCount = 1250;
+    let hasPledged = false;
+    let currentFontSize = 16;
+
+    const mcqQuestions = [
+      { q: "1. Brush karte samay nal band rakhne se kitna pani bachta hai?", options: ["1-2 Liter", "6-10 Liter", "20 Liter", "50 Liter"], answer: 1 },
+      { q: "2. 10 minute ke shower snan me kitna pani kharch hota hai?", options: ["15-20 Liter", "30-40 Liter", "80-100 Liter", "200 Liter"], answer: 2 },
+      { q: "3. Rain Water Harvesting ka mukhya uddeshya kya hai?", options: ["Nadi saf karna", "Groundwater level badhana", "Kapde dhona", "Bijli banana"], answer: 1 },
+      { q: "4. Vishwa Jal Diwas kab manaya jata hai?", options: ["15 January", "22 March", "5 June", "15 August"], answer: 1 },
+      { q: "5. Choti nadiyon par pani rokne ke liye kya banaya jata hai?", options: ["Check Dam", "Pool", "Flyover", "Road"], answer: 0 }
+    ];
+
+    function createBubbles() {
+      const container = document.getElementById("bubblesContainer");
+      for (let i = 0; i < 15; i++) {
+        let bubble = document.createElement("div");
+        bubble.className = "bubble";
+        let size = Math.random() * 30 + 10;
+        bubble.style.width = size + "px";
+        bubble.style.height = size + "px";
+        bubble.style.left = Math.random() * 100 + "%";
+        bubble.style.animationDuration = (Math.random() * 8 + 6) + "s";
+        bubble.style.animationDelay = (Math.random() * 5) + "s";
+        container.appendChild(bubble);
+      }
+    }
+    createBubbles();
+
+    function showSection(sectionId) {
+      document.querySelectorAll("section").forEach(sec => {
+        if (sec.id !== "admin-container") sec.style.display = "none";
+      });
+      document.querySelectorAll("nav a").forEach(a => a.classList.remove("active"));
+
+      if (sectionId === 'topics') {
+        document.getElementById("topics-section").style.display = "block";
+        document.getElementById("nav-topics").classList.add("active");
+      } else if (sectionId === 'history') {
+        document.getElementById("history-section").style.display = "block";
+        document.getElementById("nav-history").classList.add("active");
+      } else if (sectionId === 'tools') {
+        document.getElementById("tools-section").style.display = "block";
+        document.getElementById("nav-tools").classList.add("active");
+      } else if (sectionId === 'ai-section') {
+        document.getElementById("ai-section").style.display = "block";
+        document.getElementById("nav-ai").classList.add("active");
+      } else if (sectionId === 'test-section') {
+        document.getElementById("test-section").style.display = "block";
+        document.getElementById("nav-test").classList.add("active");
+      }
+      window.scrollTo(0, 0);
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("light-mode");
+      const btn = document.getElementById("themeToggleBtn");
+      btn.innerText = document.body.classList.contains("light-mode") ? "🌙 Dark Mode" : "☀️ Light Mode";
+    }
+
+    function toggleFocusMode() { document.body.classList.toggle("focus-mode"); }
+
+    function changeFontSize(delta) {
+      currentFontSize += delta;
+      if (currentFontSize < 12) currentFontSize = 12;
+      if (currentFontSize > 24) currentFontSize = 24;
+      document.documentElement.style.setProperty('--base-font-size', currentFontSize + 'px');
+    }
+
+    function openKeypad() { document.getElementById("keypadModal").style.display = "flex"; }
+    function closeKeypad() { document.getElementById("keypadModal").style.display = "none"; clearPin(); }
+    function pressKey(num) { if (enteredPin.length < 4) { enteredPin += num; updatePinDisplay(); } }
+    function clearPin() { enteredPin = ""; updatePinDisplay(); }
+    function backspacePin() { enteredPin = enteredPin.slice(0, -1); updatePinDisplay(); }
+    function updatePinDisplay() { document.getElementById("pinDisplay").innerText = "*".repeat(enteredPin.length); }
+
+    function submitPinForm() {
+      document.getElementById("hiddenPinInput").value = enteredPin;
+      document.getElementById("pinLoginForm").submit();
+    }
+
+    function renderQuizQuestions() {
+      const container = document.getElementById("questionsContainer");
+      container.innerHTML = "";
+      mcqQuestions.forEach((qObj, index) => {
+        const card = document.createElement("div");
+        card.className = "mcq-card";
+        let optionsHTML = "";
+        qObj.options.forEach((opt, optIdx) => {
+          optionsHTML += `
+            <label class="mcq-option-label">
+              <input type="radio" name="question_${index}" value="${optIdx}">
+              <span>${opt}</span>
+            </label>
+          `;
+        });
+        card.innerHTML = `<div class="mcq-question">${qObj.q}</div><div class="mcq-options">${optionsHTML}</div>`;
+        container.appendChild(card);
+      });
+    }
+    renderQuizQuestions();
+
+    function submitQuiz() {
+      let total = mcqQuestions.length, correct = 0;
+      let wrongList = [];
+
+      mcqQuestions.forEach((qObj, idx) => {
+        const selected = document.querySelector(`input[name="question_${idx}"]:checked`);
+        if (selected) {
+          const userAns = parseInt(selected.value);
+          if (userAns === qObj.answer) correct++;
+          else wrongList.push({ q: qObj.q, userAns: qObj.options[userAns], correctAns: qObj.options[qObj.answer] });
+        } else {
+          wrongList.push({ q: qObj.q, userAns: "Not Answered", correctAns: qObj.options[qObj.answer] });
+        }
+      });
+
+      document.getElementById("statTotal").innerText = total;
+      document.getElementById("statCorrect").innerText = correct;
+      document.getElementById("statIncorrect").innerText = total - correct;
+      document.getElementById("statPercent").innerText = Math.round((correct / total) * 100) + "%";
+
+      const reviewDiv = document.getElementById("wrongQuestionsReview");
+      reviewDiv.innerHTML = wrongList.length === 0 ? `<p style="color: #00ff87;">🎉 Badhai ho! Sabhi uttar sahi hain!</p>` : "";
+      wrongList.forEach(item => {
+        reviewDiv.innerHTML += `<div style="background: rgba(255,16,83,0.08); padding:10px; border-radius:8px; margin-bottom:10px;"><div style="font-weight:bold;">${item.q}</div><div style="color:#ff4d4d;">❌ ${item.userAns}</div><div style="color:#00ff87;">✅ ${item.correctAns}</div></div>`;
+      });
+
+      document.getElementById("digitalScoreDashboard").style.display = "block";
+    }
+
+    function calculateWaterUsage() {
+      const showerMinutes = parseFloat(document.getElementById("calcShower").value) || 0;
+      const dishCycles = parseFloat(document.getElementById("calcDishes").value) || 0;
+      const total = (showerMinutes * 9) + (dishCycles * 15);
+      document.getElementById("calcResult").innerText = "Anumanit khapat: " + total + " Liter/Din";
+    }
+
+    function saveNotes() {
+      localStorage.setItem("savewater_private_note", document.getElementById("noteText").value);
+      document.getElementById("noteStatus").innerText = "✅ Note save ho gaya!";
+      setTimeout(() => document.getElementById("noteStatus").innerText = "", 3000);
+    }
+    document.getElementById("noteText").value = localStorage.getItem("savewater_private_note") || "";
+
+    function askAi() {
+      const q = document.getElementById("aiQuery").value.trim();
+      if (!q) return;
+      const chatBox = document.getElementById("aiChatBox");
+      chatBox.innerHTML += `<div><strong>Aap:</strong> ${q}</div>`;
+      chatBox.innerHTML += `<div style="color: #00f2fe; margin-bottom: 10px;"><strong>Assistant:</strong> Jal sanrakshan ke liye nal band rakhe aur varsha jal sanchit karein.</div>`;
+      document.getElementById("aiQuery").value = "";
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function takePledge() {
+      pledgeCount++;
+      document.getElementById("counterDisplay").innerText = pledgeCount.toLocaleString('hi-IN');
+      document.getElementById("pledgeModal").style.display = "flex";
+    }
+    function closePledgeModal() { document.getElementById("pledgeModal").style.display = "none"; }
+
+    function startCertificateGeneration() {
+      const name = document.getElementById("userNameInput").value.trim();
+      if (!name) { alert("Kripya naam darj karein!"); return; }
+      const element = document.createElement("div");
+      element.style.padding = "40px";
+      element.style.border = "10px solid #00f2fe";
+      element.style.background = "#020813";
+      element.style.color = "#e0f7fa";
+      element.innerHTML = `<h1 style="color:#00ff87;">SaveWater Digital Pro</h1><h2>Jal Sanrakshan Hero Certificate</h2><h3>${name}</h3><p>Ne jal sanrakshan me sakriya bhag liya hai.</p>`;
+      html2pdf().from(element).save(`Certificate_${name}.pdf`);
+    }
+
+    function downloadStudyNotesPDF() {
+      html2pdf().from(document.getElementById("pdf-content")).save('Ancient_Water_Notes.pdf');
+    }
+  </script>
+</body>
+</html>
