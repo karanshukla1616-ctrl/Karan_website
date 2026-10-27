@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import os
+import datetime
 
 app = Flask(__name__)
 app.secret_key = "karan_savewater_super_secret_key_2010"
@@ -18,7 +19,7 @@ def init_db():
         )
     ''')
     
-    # Custom Videos / Topics Table
+    # Custom Videos Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS custom_videos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,15 +36,6 @@ def init_db():
             author TEXT NOT NULL,
             text TEXT NOT NULL,
             time TEXT NOT NULL
-        )
-    ''')
-    
-    # Exam Registrations Table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS exam_registrations (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            score TEXT NOT NULL
         )
     ''')
     
@@ -83,9 +75,6 @@ def login():
     
     if row and check_password_hash(row[0], pin):
         session['owner_logged_in'] = True
-        flash('Owner Mode Activated Successfully!', 'success')
-    else:
-        flash('Incorrect PIN!', 'error')
     return redirect(url_for('index'))
 
 @app.route('/logout')
@@ -125,11 +114,10 @@ def delete_video(id):
 
 @app.route('/add_post', methods=['POST'])
 def add_post():
-    author = request.form.get('author') or "अनाम नागरिक"
+    author = request.form.get('author') or "Anaam Nagrik"
     text = request.form.get('text')
     
     if text:
-        import datetime
         time_str = datetime.datetime.now().strftime('%H:%M')
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
@@ -154,18 +142,4 @@ def delete_post(id):
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=False, host='0.0.0.0', port=port)
-    @app.route('/edit_video/<int:id>', methods=['POST'])
-def edit_video(id):
-    if not session.get('owner_logged_in'):
-        return redirect(url_for('index'))
-    
-    new_title = request.form.get('title')
-    new_url = request.form.get('video_url')
-    
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute('UPDATE custom_videos SET title=?, video_url=? WHERE id=?', (new_title, new_url, id))
-    conn.commit()
-    conn.close()
-    return redirect(url_for('index'))
     
